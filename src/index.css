@@ -1,0 +1,573 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: theme('colors.white');
+  --text: theme('colors.gray.900');
+}
+
+.dark {
+  --background: theme('colors.slate.900');
+  --text: theme('colors.white');
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+  background-color: var(--background);
+  color: var(--text);
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+code, .font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Custom scrollbar - Dark Mode (default) */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4f46e5;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6366f1;
+}
+
+/* Custom scrollbar - Light Mode */
+.light ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.light ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.light ::-webkit-scrollbar-thumb {
+  background: #6366f1;
+  border-radius: 4px;
+}
+
+.light ::-webkit-scrollbar-thumb:hover {
+  background: #4f46e5;
+}
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.6); }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-out;
+}
+
+/* Gradient text selection */
+.dark ::selection {
+  background: #6366f1;
+  color: white;
+}
+
+.light ::selection {
+  background: #818cf8;
+  color: white;
+}
+
+/* Focus styles */
+.dark button:focus,
+.dark input:focus,
+.dark textarea:focus,
+.dark a:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+.light button:focus,
+.light input:focus,
+.light textarea:focus,
+.light a:focus {
+  outline: 2px solid #818cf8;
+  outline-offset: 2px;
+}
+
+/* Smooth transitions for all interactive elements */
+button,
+a,
+input,
+textarea {
+  transition: all 0.2s ease;
+}
+
+/* Custom gradient backgrounds */
+.dark .bg-cosmic {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+}
+
+.light .bg-cosmic {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+}
+
+/* Loading states */
+.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Glass morphism effect - Dark Mode */
+.dark .glass {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+/* Glass morphism effect - Light Mode */
+.light .glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+/* Hover glow effects */
+.dark .hover-glow:hover {
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px);
+}
+
+.light .hover-glow:hover {
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-8px) rotateX(5deg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Glassmorphism enhanced - Dark Mode */
+.dark .glass-enhanced {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Glassmorphism enhanced - Light Mode */
+.light .glass-enhanced {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Neon glow text - Dark Mode */
+.dark .neon-text {
+  text-shadow: 0 0 10px rgba(99, 102, 241, 0.8),
+               0 0 20px rgba(99, 102, 241, 0.6),
+               0 0 30px rgba(99, 102, 241, 0.4);
+}
+
+/* Neon glow text - Light Mode */
+.light .neon-text {
+  text-shadow: 0 0 10px rgba(99, 102, 241, 0.6),
+               0 0 20px rgba(99, 102, 241, 0.4),
+               0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+/* Perspective container */
+.perspective {
+  perspective: 1000px;
+}
+
+/* 3D transform utilities */
+.transform-3d {
+  transform-style: preserve-3d;
+}
+
+/* Dark mode support */
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+/* Light mode overrides */
+.light {
+  color-scheme: light;
+}
+
+.light body {
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
+.light .bg-slate-900 {
+  background-color: #f8fafc;
+}
+
+.light .bg-slate-800 {
+  background-color: #f1f5f9;
+}
+
+.light .text-white {
+  color: #1e293b;
+}
+
+.light .text-gray-300 {
+  color: #64748b;
+}
+
+.light .text-gray-400 {
+  color: #94a3b8;
+}
+
+.light .border-slate-700 {
+  border-color: #e2e8f0;
+}
+
+/* Enhanced button styles - Dark Mode */
+.dark .btn-primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.dark .btn-primary:hover::before {
+  left: 100%;
+}
+
+.dark .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+}
+
+/* Enhanced button styles - Light Mode */
+.light .btn-primary {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.light .btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.light .btn-primary:hover::before {
+  left: 100%;
+}
+
+.light .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+}
+
+/* Text gradient utilities */
+.text-gradient {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Custom spacing */
+.section-padding {
+  padding: 5rem 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .section-padding {
+    padding: 6rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-padding {
+    padding: 8rem 1.5rem;
+  }
+}
+
+/* Responsive typography */
+@media (max-width: 640px) {
+  h1 {
+    font-size: 2.5rem;
+    line-height: 1.1;
+  }
+  
+  h2 {
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+}
+
+/* Three.js canvas positioning */
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+/* Light mode specific card styles */
+.light .card {
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.light .card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-color: #cbd5e1;
+}
+
+/* Light mode section backgrounds */
+.light .section-alt {
+  background-color: #f8fafc;
+}
+
+.light .section-gradient {
+  background: linear-gradient(to bottom, #ffffff, #f1f5f9);
+}
+
+/* Light mode code blocks */
+.light code {
+  background-color: #f1f5f9;
+  color: #334155;
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+/* Dark mode code blocks */
+.dark code {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+/* Light mode form inputs */
+.light input, 
+.light textarea, 
+.light select {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+}
+
+.light input:focus, 
+.light textarea:focus, 
+.light select:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Light mode buttons */
+.light .btn-secondary {
+  background-color: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.light .btn-secondary:hover {
+  background-color: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+/* Light mode tables */
+.light table {
+  border-color: #e2e8f0;
+}
+
+.light thead {
+  background-color: #f8fafc;
+}
+
+.light tr:nth-child(even) {
+  background-color: #f1f5f9;
+}
+
+/* Light mode borders */
+.light .border-subtle {
+  border-color: #e2e8f0;
+}
+
+/* Light mode shadows */
+.light .shadow-card {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.light .shadow-card-hover:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Light mode tooltips */
+.light .tooltip {
+  background-color: #1e293b;
+  color: #f8fafc;
+}
+
+/* Light mode badges */
+.light .badge {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+.light .badge-primary {
+  background-color: #818cf8;
+  color: white;
+}
+
+/* Light mode alerts */
+.light .alert-info {
+  background-color: #dbeafe;
+  border-color: #93c5fd;
+  color: #1e40af;
+}
+
+.light .alert-success {
+  background-color: #dcfce7;
+  border-color: #86efac;
+  color: #166534;
+}
+
+.light .alert-warning {
+  background-color: #fef3c7;
+  border-color: #fcd34d;
+  color: #92400e;
+}
+
+.light .alert-error {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+/* Light mode blockquotes */
+.light blockquote {
+  border-left: 4px solid #cbd5e1;
+  background-color: #f8fafc;
+  color: #475569;
+}
+
+/* Light mode dividers */
+.light hr {
+  border-color: #e2e8f0;
+}
+
+/* Light mode links */
+.light a {
+  color: #4f46e5;
+}
+
+.light a:hover {
+  color: #4338ca;
+}
+
+/* Light mode text selection */
+.light ::selection {
+  background: #818cf8;
+  color: white;
+}

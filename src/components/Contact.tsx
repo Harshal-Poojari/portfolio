@@ -240,12 +240,6 @@ const Contact: React.FC = () => {
       href: 'mailto:harshalpoojari01@gmail.com'
     },
     {
-      icon: <Phone className="w-5 h-5" />,
-      label: 'Phone',
-      value: '+91 8625045006',
-      href: 'tel:+918625045006'
-    },
-    {
       icon: <MapPin className="w-5 h-5" />,
       label: 'Location',
       value: 'Panvel, Maharashtra, India',

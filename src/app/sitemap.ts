@@ -1,27 +1,30 @@
-// src/app/sitemap.xml/route.ts
 import { MetadataRoute } from 'next';
 import { loadBlogPosts } from '@/data/sanityPosts';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // Revalidate every hour
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://letsmakeai.com';
-
+  
+  // Static pages
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: 'monthly' as const,
       priority: 1,
     },
     {
       url: `${baseUrl}/about`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: 'monthly' as const,
       priority: 0.8,
     },
     {
       url: `${baseUrl}/blog`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
+      changeFrequency: 'weekly' as const,
       priority: 0.9,
     },
     {
@@ -32,6 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   ];
 
+  // Dynamic blog posts
   try {
     const posts = await loadBlogPosts();
     const blogPages = posts.map((post): MetadataRoute.Sitemap[number] => ({
@@ -43,7 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     return [...staticPages, ...blogPages];
   } catch (error) {
-    console.error('Error generating sitemap:', error);
+    console.error('Error fetching posts for sitemap:', error);
     return staticPages;
   }
 }

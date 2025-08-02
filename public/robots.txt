@@ -1,0 +1,45 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://letsmakeai.com/sitemap.xml
+
+# Block AI training bots
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+# Additional bots to block/scrape
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+# Common crawlers that might be used for AI training
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+# Block archive.org if you don't want to be archived
+User-agent: ia_archiver
+Disallow: /
+
+# Block other known AI crawlers
+User-agent: Omgilibot
+Disallow: /
+
+User-agent: Omgilibot/*
+Disallow: /
+
+# Block AI assistant crawlers
+User-agent: Applebot-Extended
+Disallow: /
+
+# Block AI training data collection
+User-agent: anthropic-ai/*
+Disallow: /

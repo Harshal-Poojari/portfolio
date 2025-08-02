@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { loadBlogPosts } from '@/data/sanityPosts';
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export default async function sitemap() {
   const baseUrl = 'https://letsmakeai.com';
   
   // Static pages

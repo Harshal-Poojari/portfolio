@@ -1,23 +1,21 @@
-// src/sanity/env.ts - TEMPORARY WORKING VERSION
+// src/sanity/env.ts
 export const apiVersion = '2024-01-01'
 
-// ✅ HARDCODE YOUR ACTUAL VALUES HERE (temporarily)
-export const dataset = 'production'  // Your dataset name
-export const projectId = 'zcpo32br'  // Replace with your actual Sanity Project ID
+// Use environment variables with fallback to production values
+export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
+export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'zcpo32br'
 
-// Temporarily disable the assertValue function
+// Utility function for required environment variables
 function assertValue<T>(v: T | undefined, errorMessage: string): T {
   if (v === undefined) {
-    throw new Error(errorMessage)
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(errorMessage)
+    }
+    console.warn(errorMessage)
+    return '' as T
   }
   return v
 }
-
-// You can add these back later once env vars work
-// export const dataset = assertValue(
-//   process.env.NEXT_PUBLIC_SANITY_DATASET,
-//   'Missing environment variable: NEXT_PUBLIC_SANITY_DATASET'
-// )
 
 // export const projectId = assertValue(
 //   process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,

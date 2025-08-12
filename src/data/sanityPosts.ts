@@ -13,7 +13,7 @@ export const blogCategories: BlogCategory[] = [
 // Simplified configuration check
 const isSanityConfigured = (): boolean => {
   try {
-    const projectId = import.meta.env.VITE_SANITY_PROJECT_ID || '';
+    const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '';
   
     // Basic check if project ID exists and is not empty
     const isConfigured = !!projectId && projectId.trim() !== '';
@@ -22,7 +22,7 @@ const isSanityConfigured = (): boolean => {
       projectId: projectId ? `${projectId.substring(0, 4)}...${projectId.substring(projectId.length - 4)}` : 'Not found',
       isConfigured,
       reason: !projectId ? 'No project ID found' : 'Valid configuration',
-      source: 'VITE_SANITY_PROJECT_ID'
+      source: 'NEXT_PUBLIC_SANITY_PROJECT_ID'
     });
   
     return isConfigured;

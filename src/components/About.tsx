@@ -1,12 +1,10 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Code, Gamepad2, Cpu, Zap, Terminal, GitBranch, Heart, 
-  Sparkles, Rocket, Brain, Palette, Users, MessageCircle,
-  ChevronRight, Star, Lightbulb, Compass, Code2, 
-  Gamepad, Laptop, Braces, Terminal as TerminalIcon, Box, Server
+  Code, Gamepad2, Heart, Sparkles, Rocket, Palette, Users, MessageCircle,
+  ChevronRight, Star, Lightbulb, Compass, Code2, Gamepad, Box, Server
 } from 'lucide-react';
-import { useScrollAnimation, useStaggerAnimation } from '../hooks/useScrollAnimation';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { useTheme } from '../context/ThemeContext';
 
 const About: React.FC = () => {
@@ -14,7 +12,7 @@ const About: React.FC = () => {
   const sectionRef = useScrollAnimation();
   const [activeJourneyStep, setActiveJourneyStep] = useState(0);
   const [showEasterEgg, setShowEasterEgg] = useState(false);
-  const [hoveredTool, setHoveredTool] = useState<string | null>(null);
+  
   
   // Typing Game States
   const [gameActive, setGameActive] = useState(false);
@@ -191,18 +189,6 @@ const About: React.FC = () => {
     return () => window.clearInterval(timer);
   }, [gameActive, timeLeft]);
 
-  // Floating animation for background elements
-  const floatingAnimation = {
-    animate: {
-      y: [0, -10, 0],
-      transition: {
-        duration: 3,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
-    }
-  };
-
   // Interactive typing effect for the intro text
   const [displayText, setDisplayText] = useState('');
   const fullText = "I believe in creating experiences that don't just entertain, but inspire and connect people across cultures.";
@@ -271,15 +257,6 @@ const About: React.FC = () => {
       description: 'Combining creativity with code to create unique visual experiences. Skilled in GSAP, SVG animations, and creative coding techniques.',
       projects: ['Interactive Animations', 'Visual Effects']
     }
-  ];
-
-  // Add this inside your component, before the return statement
-  const backgroundIcons = [
-    <Code className="w-6 h-6" />,
-    <Gamepad2 className="w-6 h-6" />,
-    <Star className="w-6 h-6" />,
-    <Brain className="w-6 h-6" />,
-    <Laptop className="w-6 h-6" />
   ];
 
   const journey = [
@@ -1025,7 +1002,7 @@ const About: React.FC = () => {
               viewport={{ once: true }}
               className="grid grid-cols-2 gap-3 sm:gap-4"
             >
-              {values.map((value, index) => (
+              {values.map((value) => (
                 <motion.div
                   key={value.label}
                   className={`p-3 sm:p-4 rounded-xl ${

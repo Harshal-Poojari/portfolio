@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { format, parseISO } from 'date-fns';
-import { Calendar, Clock, ArrowRight, Twitter, Facebook, Linkedin, Link as LinkIcon, Share2 } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, Twitter, Facebook, Linkedin, Link as LinkIcon } from 'lucide-react';
 import LazyLoad from 'react-lazyload';
 import ReactMarkdown from 'react-markdown';
 import { useRouter } from '@/context/RouterContext';

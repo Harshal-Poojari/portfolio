@@ -4,7 +4,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { RouterProvider, useRouter } from './context/RouterContext';
-import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Import your new, centralized navigation configuration
 import { NAVIGATION_ITEMS, NavigationItem } from './config/navigation';

@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getPostBySlug, getRelatedPosts } from '@/lib/api';
 import BlogPostPage from '@/pages/BlogPostPage';
-
+import { transformPostToBlogPost, transformPostsToBlogPosts } from '@/utils/transformPost';
 
 interface PageProps {
   params: {
@@ -22,38 +22,40 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       };
     }
     
+    const blogPost = transformPostToBlogPost(post);
+    
     return {
-      title: `${post.seoTitle || post.title} - Prompto Blog`,
-      description: post.seoDescription || post.excerpt || post.description || '',
-      keywords: post.tags?.join(', '),
-      authors: [{ name: typeof post.author === 'string' ? post.author : post.author?.name || 'Harshal Poojari' }],
+      title: `${blogPost.seoTitle || blogPost.title} - Prompto Blog`,
+      description: blogPost.seoDescription || blogPost.excerpt || '',
+      keywords: blogPost.tags?.join(', '),
+      authors: [{ name: typeof blogPost.author === 'string' ? blogPost.author : blogPost.author?.name || 'Harshal Poojari' }],
       
       openGraph: {
-        title: post.seoTitle || post.title,
-        description: post.seoDescription || post.excerpt || post.description || '',
+        title: blogPost.seoTitle || blogPost.title,
+        description: blogPost.seoDescription || blogPost.excerpt || '',
         type: 'article',
         url: `https://letsmakeai.com/blog/${params.slug}`,
         siteName: 'Prompto Blog',
-        images: post.coverImage ? [
+        images: blogPost.coverImage ? [
           {
-            url: post.coverImage,
+            url: blogPost.coverImage,
             width: 1200,
             height: 630,
-            alt: post.title,
+            alt: blogPost.title,
           }
         ] : [],
-        publishedTime: post.publishedAt,
-        modifiedTime: post.updatedAt || post.publishedAt,
-        authors: [typeof post.author === 'string' ? post.author : post.author?.name || 'Harshal Poojari'],
+        publishedTime: blogPost.publishedAt,
+        modifiedTime: blogPost.updatedAt || blogPost.publishedAt,
+        authors: [typeof blogPost.author === 'string' ? blogPost.author : blogPost.author?.name || 'Harshal Poojari'],
         section: 'Technology',
-        tags: post.tags,
+        tags: blogPost.tags,
       },
       
       twitter: {
         card: 'summary_large_image',
-        title: post.seoTitle || post.title,
-        description: post.seoDescription || post.excerpt || post.description || '',
-        images: post.coverImage ? [post.coverImage] : [],
+        title: blogPost.seoTitle || blogPost.title,
+        description: blogPost.seoDescription || blogPost.excerpt || '',
+        images: blogPost.coverImage ? [blogPost.coverImage] : [],
         creator: '@yourtwitterhandle',
         site: '@letsmakeai',
       },
@@ -85,11 +87,15 @@ export default async function BlogPostRoute({ params }: PageProps) {
     
     const relatedPosts = await getRelatedPosts(post._id, 3);
     
+    // Transform the post and related posts to match the BlogPost type
+    const blogPost = transformPostToBlogPost(post);
+    const relatedBlogPosts = transformPostsToBlogPosts(relatedPosts);
+    
     return (
       <BlogPostPage 
         slug={params.slug}
-        post={post} 
-        relatedPosts={relatedPosts}
+        post={blogPost} 
+        relatedPosts={relatedBlogPosts}
       />
     );
   } catch (error) {

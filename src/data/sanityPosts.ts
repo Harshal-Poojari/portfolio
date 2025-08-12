@@ -10,53 +10,21 @@ export const blogCategories: BlogCategory[] = [
   { id: 'tutorial', name: 'Tutorials', color: 'orange' },
 ];
 
-// ✅ ENHANCED: Better environment variable detection with comprehensive debugging
+// Simplified configuration check
 const isSanityConfigured = (): boolean => {
   try {
-    // For Vite projects, check import.meta.env first
-    const viteProjectId = import.meta.env.VITE_SANITY_PROJECT_ID;
-    const viteDataset = import.meta.env.VITE_SANITY_DATASET;
-    
-    // Fallback checks for different environment setups
-    const nextProjectId = typeof process !== 'undefined' ? process.env?.NEXT_PUBLIC_SANITY_PROJECT_ID : undefined;
-    const processProjectId = typeof process !== 'undefined' ? process.env?.VITE_SANITY_PROJECT_ID : undefined;
-    
-    // Use the first available project ID
-    const projectId = viteProjectId || nextProjectId || processProjectId;
-    const dataset = viteDataset || 'production';
-
-    // Enhanced debugging
-    console.log('🔍 Environment Variable Detection:', {
-      'viteProjectId': viteProjectId || 'Not found',
-      'nextProjectId': nextProjectId || 'Not found', 
-      'processProjectId': processProjectId || 'Not found',
-      'selectedProjectId': projectId || 'Not found',
-      'dataset': dataset,
-      'projectIdType': typeof projectId,
-      'projectIdLength': projectId ? projectId.length : 0,
-      'allViteVars': Object.keys(import.meta.env).filter(key => key.startsWith('VITE_')),
-    });
-
-    const isConfigured = !!(
-      projectId && 
-      typeof projectId === 'string' &&
-      projectId.trim() !== '' &&
-      projectId !== 'demo-project-id' && 
-      projectId !== 'your-project-id' &&
-      projectId !== 'your-actual-project-id' &&
-      projectId.length > 8 // Sanity project IDs are typically 8+ characters
-    );
-
+    const projectId = import.meta.env.VITE_SANITY_PROJECT_ID || '';
+  
+    // Basic check if project ID exists and is not empty
+    const isConfigured = !!projectId && projectId.trim() !== '';
+  
     console.log('🔧 Sanity Configuration Check:', {
-      projectId: projectId || 'Not found',
+      projectId: projectId ? `${projectId.substring(0, 4)}...${projectId.substring(projectId.length - 4)}` : 'Not found',
       isConfigured,
-      reason: !projectId ? 'No project ID found' : 
-              !isConfigured ? 'Project ID invalid or placeholder' : 'Valid configuration',
-      source: viteProjectId ? 'VITE_SANITY_PROJECT_ID' : 
-              nextProjectId ? 'NEXT_PUBLIC_SANITY_PROJECT_ID' : 
-              processProjectId ? 'process.env.VITE_SANITY_PROJECT_ID' : 'Not configured'
+      reason: !projectId ? 'No project ID found' : 'Valid configuration',
+      source: 'VITE_SANITY_PROJECT_ID'
     });
-
+  
     return isConfigured;
   } catch (error) {
     console.error('❌ Error checking Sanity configuration:', error);
@@ -316,13 +284,18 @@ const convertSanityToPost = (sanityPost: SanityBlogPost): BlogPost => {
   }
 };
 
-// ✅ IMPROVED: Smarter blog post loading with bypass option
+// ✅ IMPROVED: Smarter blog post loading with better error handling
 export const loadBlogPosts = async (): Promise<BlogPost[]> => {
   console.log('🔄 Starting blog posts load process...');
   
+  // Check if Sanity is properly configured first
+  if (!isSanityConfigured()) {
+    console.warn('⚠️ Sanity is not properly configured. Using fallback posts.');
+    return getFallbackPosts();
+  }
+
   try {
-    // First, try to load from Sanity regardless of config check
-    console.log('🔄 Attempting to fetch posts directly from Sanity...');
+    console.log('🔄 Attempting to fetch posts from Sanity...');
 
     const query = `*[_type == "blogPost"] | order(publishedAt desc) {
       _id,
@@ -346,55 +319,58 @@ export const loadBlogPosts = async (): Promise<BlogPost[]> => {
       content
     }`;
 
-    const sanityPosts: SanityBlogPost[] = await client.fetch(query);
-    
-    console.log(`📝 Sanity query result:`, {
-      type: Array.isArray(sanityPosts) ? 'array' : typeof sanityPosts,
-      length: Array.isArray(sanityPosts) ? sanityPosts.length : 'N/A',
-      firstPost: sanityPosts?.[0]?.title || 'No posts'
-    });
+    // Set a timeout for the fetch request
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
-    if (Array.isArray(sanityPosts) && sanityPosts.length > 0) {
-      const posts = sanityPosts
-        .filter(post => {
-          const isValid = post && typeof post === 'object' && post._id;
-          if (!isValid) {
-            console.warn('⚠️ Filtering out invalid post:', post);
-          }
-          return isValid;
-        })
-        .map(convertSanityToPost);
-
-      console.log(`✅ Successfully processed ${posts.length} posts from Sanity`);
-      console.log(`📋 Post titles:`, posts.map(p => p.title));
-      return posts;
-    } else if (Array.isArray(sanityPosts) && sanityPosts.length === 0) {
-      console.info('ℹ️ No posts found in Sanity. Create some posts in your Studio!');
-      console.log('🔗 Sanity Studio: http://localhost:3333');
+    try {
+      const sanityPosts: SanityBlogPost[] = await client.fetch(query, {}, { signal: controller.signal });
+      clearTimeout(timeoutId);
       
-      // Check configuration as secondary info
-      const sanityConfigured = isSanityConfigured();
-      if (!sanityConfigured) {
-        console.warn('⚠️ Also, Sanity configuration seems incorrect - check environment variables');
+      console.log(`📝 Sanity query result:`, {
+        type: Array.isArray(sanityPosts) ? 'array' : typeof sanityPosts,
+        length: Array.isArray(sanityPosts) ? sanityPosts.length : 'N/A',
+        firstPost: sanityPosts?.[0]?.title || 'No posts'
+      });
+
+      if (Array.isArray(sanityPosts) && sanityPosts.length > 0) {
+        const posts = sanityPosts
+          .filter(post => {
+            const isValid = post && typeof post === 'object' && post._id;
+            if (!isValid) {
+              console.warn('⚠️ Filtering out invalid post:', post);
+            }
+            return isValid;
+          })
+          .map(convertSanityToPost);
+
+        console.log(`✅ Successfully processed ${posts.length} posts from Sanity`);
+        return posts;
+      } else {
+        console.info('ℹ️ No posts found in Sanity. Using fallback posts.');
+        return getFallbackPosts();
       }
-      
-      return getFallbackPosts();
-    } else {
-      console.warn('⚠️ Sanity returned unexpected data type:', typeof sanityPosts);
-      return getFallbackPosts();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      const fetchError = error as Error;
+      if (fetchError.name === 'AbortError') {
+        console.error('❌ Sanity request timed out after 5 seconds');
+      }
+      throw fetchError; // Re-throw to be caught by the outer catch
     }
-
   } catch (error) {
     console.error('❌ Error fetching blog posts from Sanity:', error);
     
-    // Enhanced error analysis
     if (error instanceof Error) {
-      if (error.message.includes('projectId')) {
-        console.error('🚨 This looks like a project ID configuration issue');
-        console.log('💡 Check your environment variables and sanity.config.ts');
+      if (error.message.includes('projectId') || error.message.includes('project not found')) {
+        console.error('🚨 Sanity project ID is invalid or not found');
+        console.log('💡 Please check your VITE_SANITY_PROJECT_ID environment variable');
       } else if (error.message.includes('network') || error.message.includes('fetch')) {
-        console.error('🚨 This looks like a network connectivity issue');
-        console.log('💡 Make sure Sanity Studio is running and accessible');
+        console.error('🚨 Network error connecting to Sanity');
+        console.log('💡 Check your internet connection and make sure the Sanity API is accessible');
+      } else if (error.message.includes('Invalid token')) {
+        console.error('🚨 Invalid Sanity token');
+        console.log('💡 Check your Sanity token in the environment variables');
       }
     }
     

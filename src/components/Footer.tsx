@@ -1,14 +1,14 @@
 import React, { useContext } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Mail, Github, Linkedin, Twitter, ExternalLink } from 'lucide-react';
-import { ThemeContext } from '../App';
+import { useTheme } from '../context/ThemeContext';
 
 const Footer: React.FC = () => {
-  const { isDarkMode } = useContext(ThemeContext);
+  const { isDarkMode } = useTheme();
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
-    {
+    { 
       name: 'GitHub',
       url: 'https://github.com/harshalpoojari',
       icon: <Github className="w-5 h-5" />

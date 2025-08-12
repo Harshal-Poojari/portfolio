@@ -7,10 +7,10 @@ import {
   Gamepad, Laptop, Braces, Terminal as TerminalIcon, Box, Server
 } from 'lucide-react';
 import { useScrollAnimation, useStaggerAnimation } from '../hooks/useScrollAnimation';
-import { ThemeContext } from '../App';
+import { useTheme } from '../context/ThemeContext';
 
 const About: React.FC = () => {
-  const { isDarkMode } = useContext(ThemeContext);
+  const { isDarkMode } = useTheme();
   const sectionRef = useScrollAnimation();
   const [activeJourneyStep, setActiveJourneyStep] = useState(0);
   const [showEasterEgg, setShowEasterEgg] = useState(false);
@@ -134,7 +134,7 @@ const About: React.FC = () => {
     if (!gameActive) return;
 
     if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault(); // Prevent space from adding space to input
+      e.preventDefault();
       const typedWord = userInput.trim();
       const isCorrect = typedWord === currentWord;
       
@@ -191,10 +191,6 @@ const About: React.FC = () => {
     return () => window.clearInterval(timer);
   }, [gameActive, timeLeft]);
 
-
-
-  
-
   // Floating animation for background elements
   const floatingAnimation = {
     animate: {
@@ -206,8 +202,6 @@ const About: React.FC = () => {
       }
     }
   };
-
-
 
   // Interactive typing effect for the intro text
   const [displayText, setDisplayText] = useState('');
@@ -335,7 +329,7 @@ const About: React.FC = () => {
     "I name my Git branches after Indian spices 🌶️"
   ];
 
-  // Update the renderToolbox function
+  // Update the renderToolbox function - MOBILE RESPONSIVE
   const renderToolbox = () => (
     <motion.div
       initial={{ opacity: 0 }}
@@ -363,12 +357,12 @@ const About: React.FC = () => {
       />
 
       {/* Content Container */}
-      <div className="relative p-6">
+      <div className="relative p-4 sm:p-6">
         {/* Section Title */}
         <motion.div 
           initial={{ y: -20 }}
           animate={{ y: 0 }}
-          className="text-center mb-8"
+          className="text-center mb-6 sm:mb-8"
         >
           <motion.div
             animate={{
@@ -379,22 +373,22 @@ const About: React.FC = () => {
               repeat: Infinity,
               ease: "linear"
             }}
-            className={`w-12 h-12 mx-auto mb-4 rounded-xl flex items-center justify-center ${
+            className={`w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-4 rounded-xl flex items-center justify-center ${
               isDarkMode 
                 ? 'bg-indigo-500/10 text-indigo-400' 
                 : 'bg-indigo-50 text-indigo-600'
             }`}
           >
-            <Code2 className="w-6 h-6" />
+            <Code2 className="w-5 h-5 sm:w-6 sm:h-6" />
           </motion.div>
-          <h3 className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+          <h3 className={`text-xl sm:text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             Development Arsenal
           </h3>
-          <div className="w-20 h-1 mx-auto bg-gradient-to-r from-indigo-500/50 to-purple-500/50 rounded-full" />
+          <div className="w-16 sm:w-20 h-1 mx-auto bg-gradient-to-r from-indigo-500/50 to-purple-500/50 rounded-full" />
         </motion.div>
 
-        {/* Tools Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        {/* Tools Grid - RESPONSIVE */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {toolbox.map((tool, index) => (
             <motion.button
               key={tool.name}
@@ -408,7 +402,7 @@ const About: React.FC = () => {
               }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className={`group relative p-4 rounded-xl border ${
+              className={`group relative p-3 sm:p-4 rounded-xl border ${
                 isDarkMode 
                   ? 'bg-slate-800/50 border-slate-700/50 hover:border-indigo-500/50' 
                   : 'bg-white/50 border-gray-200/50 hover:border-indigo-500/30'
@@ -424,20 +418,20 @@ const About: React.FC = () => {
               />
 
               <div className="relative flex flex-col items-center text-center">
-                <div className={`p-3 rounded-xl mb-3 ${
+                <div className={`p-2 sm:p-3 rounded-xl mb-2 sm:mb-3 ${
                   isDarkMode 
                     ? 'bg-indigo-500/20 text-indigo-400' 
                     : 'bg-indigo-100 text-indigo-600'
                 } transition-colors duration-300`}>
                   {tool.icon}
                 </div>
-                <h4 className={`text-sm font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <h4 className={`text-xs sm:text-sm font-semibold mb-1 sm:mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   {tool.name}
                 </h4>
-                <span className={`text-xs mb-3 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                <span className={`text-xs mb-2 sm:mb-3 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   {tool.type}
                 </span>
-                <div className="w-full space-y-2">
+                <div className="w-full space-y-1 sm:space-y-2">
                   <div className="h-1 rounded-full overflow-hidden bg-slate-700/30">
                     <motion.div
                       initial={{ width: 0 }}
@@ -470,17 +464,15 @@ const About: React.FC = () => {
     </motion.div>
   );
 
-
-
   return (
     <section 
       id="about" 
-      className={`relative py-20 ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`} 
+      className={`relative py-12 sm:py-16 lg:py-20 px-4 sm:px-6 ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`} 
       ref={sectionRef}
     >
       <div className="container mx-auto max-w-6xl relative">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12 sm:mb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -488,7 +480,7 @@ const About: React.FC = () => {
             viewport={{ once: true }}
             className="mb-6"
           >
-            <h2 className="text-4xl md:text-5xl font-bold inline-flex items-center justify-center gap-3">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold inline-flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
               <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
                 The Story So Far
               </span>
@@ -501,15 +493,15 @@ const About: React.FC = () => {
             </h2>
           </motion.div>
           
-          {/* Intro Quote */}
+          {/* Intro Quote - RESPONSIVE TEXT */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className={`max-w-3xl mx-auto mb-12 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}
+            className={`max-w-3xl mx-auto mb-8 sm:mb-12 px-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}
           >
-            <p className={`text-xl font-light italic ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <p className={`text-lg sm:text-xl font-light italic ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               {displayText}
               <motion.span
                 animate={{ opacity: [0, 1, 0] }}
@@ -521,11 +513,11 @@ const About: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-2 gap-12 items-start">
+        {/* Main Content Grid - MOBILE FIRST */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-start">
           {/* Left Column - Personal Intro & Image */}
-          <div className="space-y-8 relative">
-            {/* Profile Section */}
+          <div className="space-y-6 sm:space-y-8 relative order-1 lg:order-1">
+            {/* Profile Section - MOBILE RESPONSIVE */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -537,23 +529,23 @@ const About: React.FC = () => {
                   : 'bg-white border border-gray-200 shadow-lg'
               }`}
             >
-              {/* Profile Image Container */}
-              <div className="aspect-[4/3] relative overflow-hidden">
+              {/* Profile Image Container - RESPONSIVE */}
+              <div className="aspect-[4/3] sm:aspect-[4/3] relative overflow-hidden">
                 <div className={`absolute inset-0 ${
                   isDarkMode 
                     ? 'bg-gradient-to-br from-indigo-900/30 to-purple-900/30' 
                     : 'bg-gradient-to-br from-indigo-100/30 to-purple-100/30'
                 }`}>
                   {/* Profile Image */}
-                  <div className="h-full flex items-center justify-center">
+                  <div className="h-full flex items-center justify-center p-4 sm:p-6">
                     <motion.div 
-                      className="relative w-64 h-64 rounded-full overflow-hidden"
+                      className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-full overflow-hidden"
                       whileHover={{ scale: 1.05 }}
                     >
                       <img
                         src={isDarkMode 
-                          ? "/images/AI-dark.jpg"  // AI dark theme
-                          : "/images/AI-light.jpg" // AI light theme
+                          ? "/images/AI-dark.jpg"
+                          : "/images/AI-light.jpg"
                         }
                         alt="Harshal Poojari"
                         className="w-full h-full object-cover"
@@ -562,9 +554,9 @@ const About: React.FC = () => {
                       {/* Hover Effect - Show artistic version */}
                       <motion.div
                         className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300"
-                    >
+                      >
                         <img
-                          src="/images/AI-Artistic.jpg" // AI artistic
+                          src="/images/AI-Artistic.jpg"
                           alt="Harshal Poojari - Artistic"
                           className="w-full h-full object-cover"
                         />
@@ -574,14 +566,14 @@ const About: React.FC = () => {
                 </div>
               </div>
 
-              {/* Profile Info */}
-              <div className="p-6 space-y-4">
-                <div className="flex items-start justify-between">
+              {/* Profile Info - RESPONSIVE */}
+              <div className="p-4 sm:p-6 space-y-4">
+                <div className="flex items-start justify-between flex-wrap gap-2">
                   <div>
-                    <h3 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    <h3 className={`text-xl sm:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                       Harshal Poojari
                     </h3>
-                    <p className={`text-sm ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`}>
+                    <p className={`text-xs sm:text-sm ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`}>
                       Founder @ Stellar Pop Games
                     </p>
                   </div>
@@ -595,7 +587,7 @@ const About: React.FC = () => {
                     }`}
                     onClick={() => setShowEasterEgg(!showEasterEgg)}
                   >
-                    <Heart className="w-5 h-5" />
+                    <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
                   </motion.button>
                 </div>
 
@@ -607,12 +599,12 @@ const About: React.FC = () => {
                       exit={{ opacity: 0, height: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className={`p-4 rounded-lg ${
+                      <div className={`p-3 sm:p-4 rounded-lg ${
                         isDarkMode 
                           ? 'bg-slate-700/50 border border-slate-600' 
                           : 'bg-gray-100 border border-gray-200'
                       }`}>
-                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                        <p className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                           {funFacts[Math.floor(Math.random() * funFacts.length)]}
                         </p>
                       </div>
@@ -620,25 +612,25 @@ const About: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                {/* Quick Stats */}
-                <div className="grid grid-cols-2 gap-4 pt-4">
-                  <div className={`p-4 rounded-lg ${
+                {/* Quick Stats - RESPONSIVE GRID */}
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 pt-4">
+                  <div className={`p-3 sm:p-4 rounded-lg ${
                     isDarkMode 
                       ? 'bg-slate-700/50' 
                       : 'bg-gray-100'
                   }`}>
-                    <div className="text-2xl font-bold text-indigo-500">3+</div>
-                    <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <div className="text-xl sm:text-2xl font-bold text-indigo-500">3+</div>
+                    <div className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                       Years Experience
                     </div>
                   </div>
-                  <div className={`p-4 rounded-lg ${
+                  <div className={`p-3 sm:p-4 rounded-lg ${
                     isDarkMode 
                       ? 'bg-slate-700/50' 
                       : 'bg-gray-100'
                   }`}>
-                    <div className="text-2xl font-bold text-purple-500">10+</div>
-                    <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <div className="text-xl sm:text-2xl font-bold text-purple-500">10+</div>
+                    <div className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                       Projects Built
                     </div>
                   </div>
@@ -646,36 +638,36 @@ const About: React.FC = () => {
               </div>
             </motion.div>
 
-            {/* Current Project - Interactive Showcase */}
-            <div className={`mt-12 ${isDarkMode ? 'bg-slate-800/50' : 'bg-white'} rounded-xl overflow-hidden border ${
+            {/* Current Project - MOBILE RESPONSIVE */}
+            <div className={`${isDarkMode ? 'bg-slate-800/50' : 'bg-white'} rounded-xl overflow-hidden border ${
               isDarkMode ? 'border-slate-700' : 'border-gray-200'
             }`}>
               <div className="relative">
-                {/* Project Header */}
-                <div className={`p-6 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                {/* Project Header - RESPONSIVE */}
+                <div className={`p-4 sm:p-6 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center ${
                         isDarkMode ? 'bg-slate-700' : 'bg-gray-100'
                       }`}>
-                        <span className="text-2xl">🎮</span>
+                        <span className="text-xl sm:text-2xl">🎮</span>
                       </div>
                       <div>
-                        <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <h3 className={`text-lg sm:text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                           Indian Business Board Game
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
                           <div className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-green-400' : 'bg-green-500'}`} />
-                          <span className={`text-sm ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>
+                          <span className={`text-xs sm:text-sm ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>
                             Active Development
                           </span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       {['Unity', 'C#', 'Multiplayer'].map((tech) => (
-                        <div key={tech} className={`px-3 py-1 rounded-lg text-sm ${
-                isDarkMode 
+                        <div key={tech} className={`px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm ${
+                          isDarkMode 
                             ? 'bg-slate-700 text-gray-300' 
                             : 'bg-gray-100 text-gray-700'
                         }`}>
@@ -686,24 +678,22 @@ const About: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Interactive Content */}
-                <div className="p-6">
-                  <div className="flex items-start gap-8">
+                {/* Interactive Content - RESPONSIVE LAYOUT */}
+                <div className="p-4 sm:p-6">
+                  <div className="flex flex-col lg:flex-row items-start gap-6 sm:gap-8">
                     {/* Project Info */}
                     <div className="flex-1">
-                      <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      <p className={`text-sm sm:text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                         A strategic multiplayer board game celebrating Indian entrepreneurship. Players navigate through city tiles, 
                         manage properties, and compete in a dynamic market.
                       </p>
-                      
-                      
                     </div>
 
-                    {/* Progress Preview */}
-                    <div className={`w-64 p-4 rounded-xl ${
+                    {/* Progress Preview - MOBILE STACK */}
+                    <div className={`w-full lg:w-64 p-3 sm:p-4 rounded-xl ${
                       isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'
                     }`}>
-                      <h4 className={`text-sm font-medium mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      <h4 className={`text-sm font-medium mb-3 sm:mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                         Development Progress
                       </h4>
                       <div className="space-y-3">
@@ -735,11 +725,11 @@ const About: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Quick Actions */}
-                  <div className="flex items-center justify-between mt-6 pt-4 border-t border-dashed ${
+                  {/* Quick Actions - RESPONSIVE LAYOUT */}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-6 pt-4 border-t border-dashed ${
                     isDarkMode ? 'border-slate-700' : 'border-gray-200'
                   }">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <div className={`px-2 py-1 rounded text-xs ${
                         isDarkMode ? 'bg-indigo-500/20 text-indigo-300' : 'bg-indigo-50 text-indigo-600'
                       }`}>
@@ -751,11 +741,11 @@ const About: React.FC = () => {
                         Last updated: 2 days ago
                       </div>
                     </div>
-                    <div className="flex gap-3">
-                      <button className="px-4 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-200">
+                    <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
+                      <button className="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-200">
                         Try Demo
                       </button>
-                      <button className={`px-4 py-1.5 text-sm rounded-lg border ${
+                      <button className={`flex-1 sm:flex-none px-3 sm:px-4 py-1.5 text-sm rounded-lg border ${
                         isDarkMode 
                           ? 'border-gray-600 text-gray-300 hover:border-indigo-500 hover:text-indigo-400' 
                           : 'border-gray-300 text-gray-700 hover:border-indigo-500 hover:text-indigo-600'
@@ -767,12 +757,13 @@ const About: React.FC = () => {
                 </div>
               </div>
             </div>
-            {/* Typing Speed Mini-Game */}
-            <div className={`mt-4 ${isDarkMode ? 'bg-slate-800/50' : 'bg-white'} rounded-xl overflow-hidden border ${
+
+            {/* Typing Speed Mini-Game - MOBILE RESPONSIVE */}
+            <div className={`${isDarkMode ? 'bg-slate-800/50' : 'bg-white'} rounded-xl overflow-hidden border ${
               isDarkMode ? 'border-slate-700' : 'border-gray-200'
             }`}>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-3">
+              <div className="p-3 sm:p-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3">
                   <div>
                     <div className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                       Speed Typing Challenge
@@ -781,41 +772,39 @@ const About: React.FC = () => {
                       Test your typing speed • High Score: {highScore} WPM
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                     <select
                       value={duration}
                       onChange={(e) => setDuration(Number(e.target.value) as 30 | 60 | 120)}
-                      className={`px-2 py-1 rounded text-xs ${
+                      className={`px-2 py-1 rounded text-xs flex-1 sm:flex-none ${
                         isDarkMode 
                           ? 'bg-slate-700 text-gray-300 border-slate-600' 
                           : 'bg-gray-100 text-gray-600 border-gray-200'
                       } border outline-none`}
                       disabled={gameActive}
                     >
-                      <option value={30}>30 seconds</option>
-                      <option value={60}>1 minute</option>
-                      <option value={120}>2 minutes</option>
+                      <option value={30}>30 sec</option>
+                      <option value={60}>1 min</option>
+                      <option value={120}>2 min</option>
                     </select>
                     <select
                       value={theme}
                       onChange={(e) => setTheme(e.target.value as any)}
-                      className={`px-2 py-1 rounded text-xs ${
+                      className={`px-2 py-1 rounded text-xs flex-1 sm:flex-none ${
                         isDarkMode 
                           ? 'bg-slate-700 text-gray-300 border-slate-600' 
                           : 'bg-gray-100 text-gray-600 border-gray-200'
                       } border outline-none`}
                       disabled={gameActive}
                     >
-                      <option value="tech">Tech Terms</option>
-                      <option value="webdev">Web Dev</option>
+                      <option value="tech">Tech</option>
+                      <option value="webdev">Web</option>
                       <option value="gaming">Gaming</option>
                       <option value="design">Design</option>
-                      <option value="quotes">Quotes</option>
-                      <option value="facts">Fun Facts</option>
                     </select>
                     <button
                       onClick={gameActive ? () => setGameActive(false) : startGame}
-                      className={`px-3 py-1 rounded-lg text-xs font-medium ${
+                      className={`px-3 py-1 rounded-lg text-xs font-medium flex-1 sm:flex-none ${
                         gameActive
                           ? isDarkMode 
                             ? 'bg-red-500/20 text-red-300 hover:bg-red-500/30' 
@@ -830,8 +819,8 @@ const About: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Game Area */}
-                <div className={`p-4 rounded-lg ${
+                {/* Game Area - MOBILE OPTIMIZED */}
+                <div className={`p-3 sm:p-4 rounded-lg ${
                   isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'
                 }`}>
                   {/* Current Word Display */}
@@ -840,7 +829,7 @@ const About: React.FC = () => {
                       key={currentWord}
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`text-2xl font-medium ${
+                      className={`text-xl sm:text-2xl font-medium ${
                         isDarkMode ? 'text-white' : 'text-gray-900'
                       }`}
                     >
@@ -857,9 +846,9 @@ const About: React.FC = () => {
                       onChange={handleInputChange}
                       onKeyPress={handleKeyPress}
                       disabled={!gameActive}
-                      placeholder={gameActive ? 'Type word and press Space or Enter...' : 'Press Start to begin'}
-                      className={`w-full px-4 py-2 rounded-lg text-center ${
-                  isDarkMode 
+                      placeholder={gameActive ? 'Type word and press Space...' : 'Press Start to begin'}
+                      className={`w-full px-3 sm:px-4 py-2 rounded-lg text-center text-sm sm:text-base ${
+                        isDarkMode 
                           ? 'bg-slate-800 text-white border-slate-600'
                           : 'bg-white text-gray-900 border-gray-200'
                       } border focus:outline-none focus:ring-2 focus:ring-indigo-500`}
@@ -882,18 +871,18 @@ const About: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Stats */}
-                  <div className="grid grid-cols-4 gap-4 mb-4">
+                  {/* Stats - MOBILE RESPONSIVE GRID */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-4">
                     <div className={`p-2 rounded-lg text-center ${
                       isDarkMode ? 'bg-slate-800' : 'bg-white'
                     }`}>
                       <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                        Time Left
-                </div>
+                        Time
+                      </div>
                       <motion.div
                         animate={{ scale: timeLeft <= 5 ? [1, 1.1, 1] : 1 }}
                         transition={{ duration: 0.3 }}
-                        className={`text-xl font-bold ${
+                        className={`text-lg sm:text-xl font-bold ${
                           timeLeft <= 5
                             ? 'text-red-500'
                             : isDarkMode
@@ -910,7 +899,7 @@ const About: React.FC = () => {
                       <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                         WPM
                       </div>
-                      <div className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      <div className={`text-lg sm:text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                         {wpm}
                       </div>
                     </div>
@@ -920,7 +909,7 @@ const About: React.FC = () => {
                       <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                         Accuracy
                       </div>
-                      <div className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      <div className={`text-lg sm:text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                         {accuracy}%
                       </div>
                     </div>
@@ -930,17 +919,17 @@ const About: React.FC = () => {
                       <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                         Words
                       </div>
-                      <div className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      <div className={`text-lg sm:text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                         {wordHistory.length}
                       </div>
                     </div>
-              </div>
+                  </div>
 
-                  {/* Word History */}
-                <div className="flex flex-wrap gap-2">
+                  {/* Word History - RESPONSIVE */}
+                  <div className="flex flex-wrap gap-1 sm:gap-2">
                     {wordHistory.slice(-5).map((item, index) => (
                       <motion.div
-                      key={index}
+                        key={index}
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         className={`px-2 py-1 rounded text-xs ${
@@ -951,32 +940,32 @@ const About: React.FC = () => {
                             : isDarkMode
                               ? 'bg-red-500/20 text-red-300'
                               : 'bg-red-50 text-red-600'
-                      }`}
-                    >
+                        }`}
+                      >
                         {item.word}
                       </motion.div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column - Journey & Skills */}
-          <div className="space-y-8">
-            {/* Journey Timeline */}
+          {/* Right Column - Journey & Skills - RESPONSIVE ORDER */}
+          <div className="space-y-6 sm:space-y-8 order-2 lg:order-2">
+            {/* Journey Timeline - MOBILE RESPONSIVE */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="space-y-6"
+              className="space-y-4 sm:space-y-6"
             >
               {journey.map((step, index) => (
                 <motion.div
                   key={step.year}
-                  className={`relative flex items-start gap-4 ${
-                    index !== journey.length - 1 ? 'pb-6' : ''
+                  className={`relative flex items-start gap-3 sm:gap-4 ${
+                    index !== journey.length - 1 ? 'pb-4 sm:pb-6' : ''
                   }`}
                   onHoverStart={() => setActiveJourneyStep(index)}
                 >
@@ -989,9 +978,9 @@ const About: React.FC = () => {
                     />
                   )}
 
-                  {/* Year bubble */}
+                  {/* Year bubble - RESPONSIVE SIZE */}
                   <motion.div
-                    className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center ${
+                    className={`relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm ${
                       activeJourneyStep === index
                         ? isDarkMode
                           ? 'bg-indigo-600 text-white'
@@ -1003,84 +992,86 @@ const About: React.FC = () => {
                     whileHover={{ scale: 1.1 }}
                     transition={{ duration: 0.2 }}
                   >
-                    {step.icon}
+                    {React.cloneElement(step.icon, { className: "w-3 h-3 sm:w-5 sm:h-5" })}
                   </motion.div>
 
-                  {/* Content */}
+                  {/* Content - RESPONSIVE TEXT */}
                   <div className={`flex-1 ${
                     isDarkMode ? 'text-gray-300' : 'text-gray-600'
                   }`}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className={`font-mono text-sm ${
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                      <span className={`font-mono text-xs sm:text-sm ${
                         isDarkMode ? 'text-indigo-400' : 'text-indigo-600'
                       }`}>
                         {step.year}
                       </span>
-                      <h4 className={`font-semibold ${
+                      <h4 className={`font-semibold text-sm sm:text-base ${
                         isDarkMode ? 'text-white' : 'text-gray-900'
                       }`}>
                         {step.title}
                       </h4>
                     </div>
-                    <p className="text-sm">{step.description}</p>
+                    <p className="text-xs sm:text-sm">{step.description}</p>
                   </div>
                 </motion.div>
               ))}
             </motion.div>
 
-            {/* Values */}
+            {/* Values - RESPONSIVE GRID */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               viewport={{ once: true }}
-              className="grid grid-cols-2 gap-4"
+              className="grid grid-cols-2 gap-3 sm:gap-4"
             >
               {values.map((value, index) => (
                 <motion.div
                   key={value.label}
-                  className={`p-4 rounded-xl ${
+                  className={`p-3 sm:p-4 rounded-xl ${
                     isDarkMode 
                       ? 'bg-slate-800/50 border border-slate-700/50' 
                       : 'bg-white border border-gray-200 shadow-sm'
                   }`}
                   whileHover={{ scale: 1.05, rotate: 1 }}
                 >
-                  <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${value.color} flex items-center justify-center text-white mb-3`}>
-                    {value.icon}
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br ${value.color} flex items-center justify-center text-white mb-2 sm:mb-3`}>
+                    {React.cloneElement(value.icon, { className: "w-4 h-4 sm:w-5 sm:h-5" })}
                   </div>
-                  <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <h4 className={`font-semibold text-sm sm:text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                     {value.label}
                   </h4>
                 </motion.div>
               ))}
             </motion.div>
 
+            {/* Render Toolbox - Already responsive */}
             {renderToolbox()}
           </div>
         </div>
 
-        {/* Call to Action */}
+        {/* Call to Action - RESPONSIVE */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mt-16"
+          className="text-center mt-12 sm:mt-16"
         >
           <a 
             href="#contact"
-            className={`inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+            className={`inline-flex items-center gap-2 px-4 sm:px-6 py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-300 ${
               isDarkMode
                 ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
                 : 'bg-indigo-500 hover:bg-indigo-600 text-white'
             }`}
           >
-            <MessageCircle className="w-5 h-5" />
-            <span>Let's Build Something Epic Together</span>
-            <ChevronRight className="w-5 h-5" />
+            <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Let's Build Something Epic Together</span>
+            <span className="sm:hidden">Let's Collaborate</span>
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </a>
-          <p className={`mt-4 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+          <p className={`mt-4 text-xs sm:text-sm px-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             Always open to interesting conversations and collaborations
           </p>
         </motion.div>

@@ -1,8 +1,8 @@
 import React from 'react';
-import { BlogPost } from '@/types/blog';
+import type { Post } from '@/lib/api';
 
 interface StructuredDataProps {
-  post: BlogPost;
+  post: Post;
 }
 
 function toISODate(date: string | Date | undefined): string | undefined {
@@ -18,7 +18,7 @@ function toISODate(date: string | Date | undefined): string | undefined {
  * This helper serializes author data for Schema.org. Handles string or object authors.
  */
 function getAuthorSchema(author: any): any {
-  if (!author) return { '@type': 'Person', name: 'Unknown Author' };
+  if (!author) return { '@type': 'Person', name: 'Harshal Poojari' };
   if (typeof author === 'string') return { '@type': 'Person', name: author };
   // Optionally support multiple profiles / accounts
   const sameAs: string[] = [];
@@ -27,7 +27,7 @@ function getAuthorSchema(author: any): any {
   if (author.website) sameAs.push(author.website);
   return {
     '@type': 'Person',
-    name: author.name || 'Unknown Author',
+    name: author.name || 'Harshal Poojari',
     ...(sameAs.length > 0 ? { sameAs } : {}),
   };
 }
@@ -35,45 +35,38 @@ function getAuthorSchema(author: any): any {
 const StructuredData: React.FC<StructuredDataProps> = ({ post }) => {
   if (!post || !post.title || !post.slug) return null;
 
-  // Compose Schema.org compliant data
-  const structuredData: any = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: post.seoTitle || post.title,
-    description: post.seoDescription || post.excerpt || undefined,
-    image: post.openGraphImage
-      ? Array.isArray(post.openGraphImage)
-        ? post.openGraphImage
-        : [post.openGraphImage]
-      : post.coverImage
-        ? [post.coverImage]
-        : undefined,
-    datePublished: toISODate(post.publishedAt) || undefined,
-    dateModified: toISODate(post.updatedAt || post.publishedAt) || undefined,
-    author: getAuthorSchema(post.author),
-    publisher: {
-      '@type': 'Organization',
-      name: 'LetsMakeAI',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://letsmakeai.com/logo.png',
-      },
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.title,
+    "description": post.excerpt || (post as any).description || '',
+    "author": {
+      "@type": "Person",
+      "name": typeof post.author === 'string' ? post.author : post.author?.name || 'Harshal Poojari',
+      "url": "https://letsmakeai.com/about"
     },
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': `https://letsmakeai.com/blog/${post.slug}`,
+    "datePublished": toISODate(post.publishedAt),
+    "dateModified": toISODate(post.updatedAt) || toISODate(post.publishedAt),
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://letsmakeai.com/blog/${post.slug}`
     },
-    ...(Array.isArray(post.tags) && post.tags.length > 0
-      ? { keywords: post.tags.join(', ') }
-      : {}),
+    "publisher": {
+      "@type": "Organization",
+      "name": "LetsMakeAI",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://letsmakeai.com/logo.png"
+      }
+    },
+    "image": post.coverImage || "https://letsmakeai.com/default-blog-image.jpg",
+    "url": `https://letsmakeai.com/blog/${post.slug}`
   };
 
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify(structuredData, null, 2), // pretty for debug/readability
-      }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData, null, 2) }}
     />
   );
 };

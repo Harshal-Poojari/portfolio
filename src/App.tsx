@@ -1,162 +1,180 @@
-'use client'; // If using Next.js app directory and this is a Client Component
+// src/App.tsx
 
-import React, { useEffect, useState, createContext } from 'react';
-import { AnimatePresence } from 'framer-motion';
+'use client';
 
-import Header from './components/Header';
+import React, { useEffect, useState, useCallback } from 'react';
 import { RouterProvider, useRouter } from './context/RouterContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
+
+// Import your new, centralized navigation configuration
+import { NAVIGATION_ITEMS, NavigationItem } from './config/navigation';
+
+// Import Components
+import Header from './components/Header';
 import LoadingScreen from './components/LoadingScreen';
-import Blog from './components/Blog';
-import BlogListPage from './pages/BlogListPage';
-import BlogPostPage from './pages/BlogPostPage';
+import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+
+// Import Page Sections
 import Hero from './components/Hero';
 import About from './components/About';
 import GameProjects from './components/GameProjects';
 import WebProjects from './components/WebProjects';
+import Blog from './components/Blog';
+import BlogListPage from './pages/BlogListPage';
+import BlogPostPage from './pages/BlogPostPage';
 import Certifications from './components/Certifications';
-import Portfolio from './components/Portfolio';
 import Contact from './components/Contact';
-import Footer from './components/Footer';
-
-
-// Define the shape of theme context for better typing
-interface ThemeContextType {
-  isDarkMode: boolean,
-  toggleTheme: () => void,
-}
-
-// Create Theme Context with default
-export const ThemeContext = createContext<ThemeContextType>({
-  isDarkMode: true,
-  toggleTheme: () => {},
-});
-
 
 const AppContent: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(true);
-  const { currentPage, currentSlug, navigateTo, goBack } = useRouter();
-
-  // On mount: load saved theme, set smooth scroll, and debug env variables
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setIsDarkMode(savedTheme === 'dark');
-    }
-
-    // Enable smooth scroll behavior
-    document.documentElement.style.scrollBehavior = 'smooth';
-
-    // Debug environment variables for sanity
-    console.log('🔍 App.tsx - Checking Sanity Configuration:', {
-      'VITE_SANITY_PROJECT_ID': import.meta.env.VITE_SANITY_PROJECT_ID || 'Not set',
-      'VITE_SANITY_DATASET': import.meta.env.VITE_SANITY_DATASET || 'Not set',
-      'Available Sanity Variables': Object.keys(import.meta.env).filter(k => k.includes('SANITY')),
-    });
-
-    if (import.meta.env.VITE_SANITY_PROJECT_ID) {
-      console.log('✅ Sanity Project ID found - blog should load from Sanity CMS');
-    } else {
-      console.warn('⚠️ No Sanity Project ID found - blog will show fallback');
-      console.log('💡 Add VITE_SANITY_PROJECT_ID to your .env.local');
+  const [activeSection, setActiveSection] = useState('home');
+  const { currentPage, currentSlug, navigateTo } = useRouter();
+  
+  // Navigation handler is now simpler, as routing logic can be in the data
+  const onNavigate = useCallback((item: NavigationItem) => {
+    if (item.external) {
+      window.open(item.href, '_blank', 'noopener,noreferrer');
+    } else if (item.href.startsWith('#')) {
+      const element = document.getElementById(item.href.substring(1));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   }, []);
 
-  // On theme change: persist and toggle html classes
+  // Initialize router with current URL on component mount
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode);
-    document.documentElement.classList.toggle('light', !isDarkMode);
-    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-  }, [isDarkMode]);
+    const handleInitialNavigation = () => {
+      const path = window.location.pathname;
+      console.log('Initial path:', path);
+      
+      // Handle direct navigation to blog post
+      if (path.startsWith('/blog/')) {
+        const slug = path.split('/blog/')[1];
+        console.log('Direct navigation to blog post:', slug);
+        if (slug) {
+          navigateTo('blog-post', slug);
+          return;
+        }
+      }
+      
+      // Handle other routes
+      switch(path) {
+        case '/blog':
+        case '/blog/':
+          navigateTo('blog-list');
+          break;
+        case '/':
+        case '':
+          navigateTo('home');
+          break;
+        default:
+          // If no route matches, stay on the current page
+          console.log('No matching route for path:', path);
+      }
+    };
 
-  // Toggle theme function to pass into context
-  const toggleTheme = () => setIsDarkMode(prev => !prev);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      handleInitialNavigation();
+    }, 700);
 
-  // Called when loading finishes (passes to LoadingScreen)
-  const handleLoadingComplete = () => setIsLoading(false);
+    return () => clearTimeout(timer);
+  }, [navigateTo]);
 
-  // Handle route: if on Studio, redirect
-  if (currentPage === 'studio') {
-    // Redirect to Sanity Studio standalone
-    setTimeout(() => {
-      window.location.href = 'http://localhost:3333/';
-    }, 100);
-    return (
-      <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
-        <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}>
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4" />
-            <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} text-lg font-medium mb-2`}>Opening Studio...</p>
-            <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-sm`}>Redirecting to Content Studio</p>
-            <p className={`${isDarkMode ? 'text-gray-500' : 'text-gray-500'} text-xs mt-2`}>Target: http://localhost:3333/</p>
-          </div>
-        </div>
-      </ThemeContext.Provider>
-    );
+  // Scrollspy now uses the imported NAVIGATION_ITEMS
+  useEffect(() => {
+    if (isLoading) return;
+    
+    const handleScroll = () => {
+      const offset = window.scrollY + 150;
+      let currentSectionId = 'home';
+      
+      const allNavLinks = NAVIGATION_ITEMS.flatMap(i => i.subItems ?? i);
+      
+      for (const item of allNavLinks) {
+        const el = document.getElementById(item.id);
+        if (el && el.offsetTop <= offset) {
+          currentSectionId = item.id;
+        }
+      }
+      setActiveSection(currentSectionId);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isLoading]);
+  
+  if (isLoading) {
+    return <LoadingScreen onComplete={() => setIsLoading(false)} />;
   }
 
-  // Show Blog List page
-  if (currentPage === 'blog-list') {
-    return (
-      <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
-        <BlogListPage />
-      </ThemeContext.Provider>
-    );
+  // Page routing logic
+  let content;
+  
+  console.log('Rendering with:', { currentPage, currentSlug });
+  
+  switch (currentPage) {
+    case 'blog-list':
+      content = <BlogListPage />;
+      break;
+    case 'blog-post':
+      if (currentSlug) {
+        console.log('Rendering BlogPostPage with slug:', currentSlug);
+        content = <BlogPostPage slug={currentSlug} />;
+      } else {
+        console.log('No slug provided for blog-post, redirecting to blog-list');
+        // If no slug is provided, redirect to blog list
+        content = <BlogListPage />;
+      }
+      break;
+    default:
+      content = (
+        <>
+          <section id="home"><Hero /></section>
+          <section id="about"><About /></section>
+          <section id="games"><GameProjects /></section>
+          <section id="web"><WebProjects /></section>
+          <section id="blog"><Blog /></section>
+          <section id="certifications"><Certifications /></section>
+          <section id="contact"><Contact /></section>
+        </>
+      );
   }
 
-  // Show individual Blog Post page
-  if (currentPage === 'blog-post' && currentSlug) {
-    return (
-      <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
-        <BlogPostPage slug={currentSlug} />
-      </ThemeContext.Provider>
-    );
-  }
+  // Check if current route is a blog page (list or post)
+  const isBlogPage = () => {
+    const path = window.location.pathname;
+    // Only hide header for /blog, /blog/, and /blog/*
+    return path === '/blog' || path === '/blog/' || path.startsWith('/blog/');
+  };
 
-  // Default: show main site pages with sections
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
-      <AnimatePresence>
-        {isLoading && <LoadingScreen onComplete={handleLoadingComplete} />}
-      </AnimatePresence>
-
-      {!isLoading && (
-        <div className={`relative min-h-screen overflow-x-hidden transition-colors duration-300 ${isDarkMode ? 'bg-slate-900 text-white' : 'bg-white text-gray-900'}`}>
-          <Header />
-          <main>
-            <section id="home"><Hero /></section>
-            <section id="about"><About /></section>
-            <section id="games"><GameProjects /></section>
-            <section id="web"><WebProjects /></section>
-            <section id="blog">
-              {/* Debug info exists but visually hidden */}
-              {process.env.NODE_ENV === 'development' && (
-                <div className="sr-only">
-                  {(() => { console.log('🔍 Rendering Blog section'); return null; })()}
-                </div>
-              )}
-              <Blog />
-            </section>
-            <section id="certifications"><Certifications /></section>
-            <section id="portfolio"><Portfolio /></section>
-            <section id="contact"><Contact /></section>
-          </main>
-          <Footer />
-          <ScrollToTop />
-        </div>
+    <div className="bg-gray-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 transition-colors duration-300">
+      {!isBlogPage() && (
+        <Header 
+          navItems={NAVIGATION_ITEMS} 
+          activeSection={activeSection} 
+          onNavigate={onNavigate} 
+        />
       )}
-    </ThemeContext.Provider>
+      <main>
+        {content}
+      </main>
+      <Footer />
+      <ScrollToTop />
+    </div>
   );
 };
 
-
-function App() {
+export default function App() {
   return (
-    <RouterProvider>
-      <AppContent />
-    </RouterProvider>
+    <ThemeProvider>
+      <RouterProvider>
+        <AppContent />
+      </RouterProvider>
+    </ThemeProvider>
   );
 }
-
-export default App;

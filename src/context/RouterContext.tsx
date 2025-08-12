@@ -12,7 +12,7 @@ interface RouterContextType {
   goBack: () => void;
 }
 
-const validRoutes = ['home', 'blog-list', 'blog-post', 'studio'];
+const validRoutes = ['home', 'blog-list', 'blog-post', 'studio', 'games'];
 const RouterContext = createContext<RouterContextType | undefined>(undefined);
 
 export const useRouter = (): RouterContextType => {
@@ -36,11 +36,21 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, []);
 
-  // Handle browser back/forward buttons
+  // Handle browser back/forward buttons and initial load
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
+      // Handle direct URL access
+      if (window.location.pathname.startsWith('/blog/') && window.location.pathname !== '/blog') {
+        const slug = window.location.pathname.split('/').pop();
+        if (slug) {
+          setCurrentPage('blog-post');
+          setCurrentSlug(slug);
+          return;
+        }
+      }
+      
       if (event.state && event.state.page) {
-        // ✅ ADDED: Validate route before setting
+        // Validate route before setting
         if (validRoutes.includes(event.state.page)) {
           setCurrentPage(event.state.page);
           setCurrentSlug(event.state.slug);
@@ -49,22 +59,48 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           setCurrentSlug(undefined);
         }
       } else {
-        setCurrentPage('home');
-        setCurrentSlug(undefined);
+        // Check for direct URL access
+        const path = window.location.pathname;
+        if (path === '/' || path === '') {
+          setCurrentPage('home');
+          setCurrentSlug(undefined);
+        } else if (path === '/blog' || path === '/blog/') {
+          setCurrentPage('blog-list');
+          setCurrentSlug(undefined);
+        } else if (path.startsWith('/blog/')) {
+          const slug = path.split('/').pop();
+          if (slug) {
+            setCurrentPage('blog-post');
+            setCurrentSlug(slug);
+          } else {
+            setCurrentPage('home');
+            setCurrentSlug(undefined);
+          }
+        } else {
+          setCurrentPage('home');
+          setCurrentSlug(undefined);
+        }
       }
     };
 
+    // Initial load handling
+    handlePopState({} as PopStateEvent);
+    
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   const navigateTo = (page: string, slug?: string) => {
-    // ✅ ADDED: Validate route
+    console.log(`navigateTo called with page: ${page}, slug: ${slug}`);
+    
+    // Validate route
     if (!validRoutes.includes(page)) {
-      console.warn(`Invalid route: ${page}. Redirecting to home.`);
+      console.warn(`Invalid route: ${page}. Valid routes are:`, validRoutes);
       page = 'home';
       slug = undefined;
     }
+
+    console.log(`Navigating to:`, { page, slug, currentPage, currentSlug });
 
     // Add current state to history before navigating
     const currentState: RouterState = { 
@@ -75,26 +111,41 @@ export const RouterProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Only add to history if it's different from the last entry
     setHistory(prev => {
       const lastEntry = prev[prev.length - 1];
-      if (!lastEntry || lastEntry.page !== currentState.page || lastEntry.slug !== currentState.slug) {
+      const shouldAdd = !lastEntry || lastEntry.page !== currentState.page || lastEntry.slug !== currentState.slug;
+      console.log(`Adding to history:`, { shouldAdd, currentState, lastEntry });
+      
+      if (shouldAdd) {
         return [...prev, currentState];
       }
       return prev;
     });
     
-    // ✅ IMPROVED: Better URL handling
+    // URL handling
     let url: string;
     if (page === 'home') {
-      url = '/'; // Clean URL for home page
+      url = '/';
+    } else if (page === 'blog-list') {
+      // Direct URL for blog list
+      url = '/blog';
     } else if (slug) {
-      url = `/#${page}/${slug}`;
+      // For blog posts, use a clean URL structure without the hash
+      if (page === 'blog-post') {
+        url = `/blog/${slug}`;
+      } else {
+        url = `/#${page}${slug ? `/${slug}` : ''}`;
+      }
     } else {
       url = `/#${page}`;
     }
     
+    console.log(`Updating URL to:`, url);
     window.history.pushState({ page, slug }, '', url);
     
+    console.log(`Updating state to:`, { page, slug });
     setCurrentPage(page);
     setCurrentSlug(slug);
+    
+    console.log(`Current route after navigation:`, { currentPage, currentSlug });
     
     // Scroll to top when navigating
     window.scrollTo({ top: 0, behavior: 'smooth' });

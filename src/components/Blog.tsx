@@ -2,13 +2,13 @@ import React, { useContext, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Tag, Clock, ArrowRight, BookOpen, ExternalLink, RefreshCw } from 'lucide-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
-import { ThemeContext } from '@/App';
-import { loadBlogPosts, blogCategories } from "../data/sanityPosts"; // ✅ Using Sanity data
+import { useTheme } from '@/context/ThemeContext';
+import { loadBlogPosts, blogCategories } from "../data/sanityPosts";
 import { useRouter } from '@/context/RouterContext';
 import type { BlogPost, BlogCategory } from '@/types/blog';
 
 const Blog: React.FC = () => {
-  const { isDarkMode } = useContext(ThemeContext);
+  const { isDarkMode } = useTheme();
   const sectionRef = useScrollAnimation();
   const { navigateTo } = useRouter();
   
@@ -24,11 +24,11 @@ const Blog: React.FC = () => {
         setLoading(true);
         setError(null);
         
-        console.log('🔄 Loading blog posts from Sanity CMS...'); // Debug log
+        console.log('🔄 Loading blog posts from Sanity CMS...');
         
         const allPosts = await loadBlogPosts();
         
-        console.log(`✅ Loaded ${allPosts.length} posts from Sanity`); // Debug log
+        console.log(`✅ Loaded ${allPosts.length} posts from Sanity`);
         
         // Get latest 3 posts, prioritizing featured posts
         const sortedPosts = allPosts.sort((a, b) => {
@@ -64,20 +64,44 @@ const Blog: React.FC = () => {
     return blogCategories.find(cat => cat.id === categoryId);
   };
 
-  const handlePostClick = (post: BlogPost) => {
-    console.log('🖱️ Clicking post:', post.title); // Debug log
+  // ✅ Fixed: Category color mapping for Tailwind CSS
+  const getCategoryColorClass = (color: string): string => {
+    const colorMap: { [key: string]: string } = {
+      'blue': 'bg-blue-500',
+      'green': 'bg-green-500',
+      'purple': 'bg-purple-500',
+      'red': 'bg-red-500',
+      'yellow': 'bg-yellow-500',
+      'indigo': 'bg-indigo-500',
+      'pink': 'bg-pink-500',
+      'gray': 'bg-gray-500',
+    };
+    return colorMap[color] || 'bg-indigo-500';
+  };
+
+  const handlePostClick = (post: BlogPost, e: React.MouseEvent) => {
+    // Only handle the click if it's not on a link or button
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'A' || target.tagName === 'BUTTON' || target.closest('a, button, [role="button"]')) {
+      return;
+    }
+    
+    console.log('🖱️ Clicking post:', post.title);
     
     // Check if the URL is external (starts with http/https)
     if (post.url && post.url.startsWith('http')) {
       window.open(post.url, '_blank');
       return;
     }
-    // Navigate to blog post page
-    navigateTo('blog-post', post.slug);
+    
+    // Use router for internal navigation
+    if (post.slug) {
+      navigateTo('blog-post', post.slug);
+    }
   };
 
   const handleRefresh = async () => {
-    console.log('🔄 Refreshing blog posts...'); // Debug log
+    console.log('🔄 Refreshing blog posts...');
     const fetchPosts = async () => {
       try {
         setLoading(true);
@@ -183,7 +207,6 @@ const Blog: React.FC = () => {
             <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} max-w-2xl mx-auto mb-4`}>
               Thoughts, tutorials, and insights from my journey in game development and web technologies
             </p>
-            {/* ✅ Added indicator that content comes from Sanity */}
             <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>
               Content managed via Sanity CMS • {posts.length} recent posts
             </p>
@@ -202,29 +225,27 @@ const Blog: React.FC = () => {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    className={`group relative cursor-pointer ${
+                    className={`group rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full flex flex-col cursor-pointer ${
                       isDarkMode 
-                        ? 'bg-slate-800/50 border-slate-700/50' 
-                        : 'bg-white border-gray-200'
-                    } backdrop-blur-sm rounded-xl border overflow-hidden hover:border-indigo-500/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1`}
-                    onClick={() => handlePostClick(post)}
-                    whileHover={{ scale: 1.02 }}
+                        ? 'bg-slate-800/90 text-indigo-400' 
+                        : 'bg-white/90 text-indigo-600'
+                    }`}
+                    onClick={(e) => handlePostClick(post, e)}
                   >
-                    {/* Post Image */}
-                    <div className="relative aspect-video bg-gradient-to-br from-indigo-900/30 to-purple-900/30 group-hover:from-indigo-900/40 group-hover:to-purple-900/40 transition-all duration-300">
+                    <div className="relative h-48 overflow-hidden">
+                      {/* ✅ Fixed: Proper ternary conditional rendering */}
                       {post.coverImage ? (
                         <img
                           src={post.coverImage}
                           alt={post.title}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                           onError={(e) => {
-                            e.currentTarget.style.display = 'none';
+                            (e.target as HTMLImageElement).style.display = 'none';
                           }}
                         />
                       ) : (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
+                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-600">
+                          <div className="w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
                             <BookOpen className="w-8 h-8 text-white" />
                           </div>
                         </div>
@@ -239,10 +260,10 @@ const Blog: React.FC = () => {
                         </div>
                       )}
 
-                      {/* Category badge */}
+                      {/* Category badge - ✅ Fixed: Dynamic color mapping */}
                       {category && (
                         <div className="absolute top-4 right-4">
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full bg-${category.color}-500 text-white`}>
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full text-white ${getCategoryColorClass(category.color)}`}>
                             {category.name}
                           </span>
                         </div>
@@ -261,7 +282,7 @@ const Blog: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="p-6 space-y-4">
+                    <div className="p-6 space-y-4 flex-grow flex flex-col">
                       {/* Post meta */}
                       <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center space-x-4">
@@ -281,7 +302,7 @@ const Blog: React.FC = () => {
                       </div>
 
                       {/* Post title and excerpt */}
-                      <div>
+                      <div className="flex-grow">
                         <h3 className={`text-xl font-bold mb-2 group-hover:text-indigo-400 transition-colors duration-200 line-clamp-2 ${
                           isDarkMode ? 'text-white' : 'text-gray-900'
                         }`}>
@@ -296,7 +317,7 @@ const Blog: React.FC = () => {
 
                       {/* Tags */}
                       {post.tags && post.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 mt-auto">
                           {post.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
                             <span
                               key={tagIndex}
@@ -349,7 +370,7 @@ const Blog: React.FC = () => {
                   <ArrowRight className="w-5 h-5" />
                 </motion.button>
 
-                {/* ✅ Quick access to Sanity Studio */}
+                {/* Studio Access */}
                 {process.env.NODE_ENV === 'development' && (
                   <motion.button 
                     onClick={() => navigateTo('studio')}
@@ -374,7 +395,7 @@ const Blog: React.FC = () => {
             </motion.div>
           </>
         ) : (
-          /* No Posts State - Updated for Sanity */
+          /* No Posts State */
           <motion.div 
             className="text-center py-12"
             initial={{ opacity: 0, y: 20 }}
@@ -392,7 +413,6 @@ const Blog: React.FC = () => {
               Ready to create your first blog post? Use Sanity Studio to get started.
             </p>
             
-            {/* ✅ Direct link to create first post */}
             {process.env.NODE_ENV === 'development' && (
               <div className="flex gap-4 justify-center">
                 <motion.button 

@@ -2,10 +2,45 @@ import React, { useContext } from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, Github, Zap, Smartphone, Globe, Database } from 'lucide-react';
 import { useScrollAnimation, useStaggerAnimation } from '../hooks/useScrollAnimation';
-import { ThemeContext } from '../App';
+import { useTheme } from '../context/ThemeContext';
+import { CometCard } from './ui/comet-card';
+
+// Tech icon component with proper typing
+const TechIcon: React.FC<{ name: string }> = ({ name }) => {
+  const iconMap: Record<string, React.ReactElement> = {
+    'React': <Globe className="w-4 h-4" />,
+    'Node.js': <Globe className="w-4 h-4" />,
+    'MongoDB': <Database className="w-4 h-4" />,
+    'Stripe': <Zap className="w-4 h-4" />,
+    'Vue.js': <Globe className="w-4 h-4" />,
+    'Firebase': <Zap className="w-4 h-4" />,
+    'Next.js': <Globe className="w-4 h-4" />,
+    'Prisma': <Database className="w-4 h-4" />,
+    'PostgreSQL': <Database className="w-4 h-4" />,
+    'Express.js': <Globe className="w-4 h-4" />,
+    'MySQL': <Database className="w-4 h-4" />,
+    'AWS': <Globe className="w-4 h-4" />,
+    'Chart.js': <Globe className="w-4 h-4" />,
+    'Django': <Globe className="w-4 h-4" />,
+    'Redis': <Database className="w-4 h-4" />,
+    'Tailwind CSS': <Globe className="w-4 h-4" />,
+  };
+
+  return iconMap[name] || <Globe className="w-4 h-4" />;
+};
+
+// Placeholder images for projects
+const placeholderImages = [
+  'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+  'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1415&q=80',
+  'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+  'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+  'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+  'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1415&q=80'
+];
 
 const WebProjects: React.FC = () => {
-  const { isDarkMode } = useContext(ThemeContext);
+  const { isDarkMode } = useTheme();
   const sectionRef = useScrollAnimation();
   const projectsRef = useStaggerAnimation('.project-card');
 
@@ -15,7 +50,7 @@ const WebProjects: React.FC = () => {
       description: 'Full-stack e-commerce solution with modern UI/UX, payment integration, and admin dashboard.',
       tech: ['React', 'Node.js', 'MongoDB', 'Stripe'],
       features: ['Responsive Design', 'Payment Gateway', 'Admin Panel'],
-      image: '/images/ecommerce_system.jpg',
+      image: placeholderImages[0],
       liveUrl: '#',
       githubUrl: '#',
       status: 'Live'
@@ -25,7 +60,7 @@ const WebProjects: React.FC = () => {
       description: 'Collaborative task management application with real-time updates and team collaboration features.',
       tech: ['Vue.js', 'Firebase', 'Tailwind CSS'],
       features: ['Real-time Sync', 'Team Collaboration', 'Dark Mode'],
-      image: '/images/task_management_app.png',
+      image: placeholderImages[1],
       liveUrl: '#',
       githubUrl: '#',
       status: 'Live'
@@ -35,7 +70,7 @@ const WebProjects: React.FC = () => {
       description: 'Advanced content generation and management platform with multiple templates and customization options.',
       tech: ['Next.js', 'Node.js', 'Prisma', 'PostgreSQL'],
       features: ['Template System', 'User Analytics', 'Content Scheduling'],
-      image: '/images/content_management_system.png',
+      image: placeholderImages[2],
       liveUrl: '#',
       githubUrl: '#',
       status: 'Live'
@@ -45,7 +80,7 @@ const WebProjects: React.FC = () => {
       description: 'Content management system specifically designed for developers and creatives.',
       tech: ['React', 'Express.js', 'MySQL', 'AWS'],
       features: ['Custom CMS', 'SEO Optimized', 'Cloud Hosting'],
-      image: '/images/Portfolio_CMS.png',
+      image: placeholderImages[3],
       liveUrl: '#',
       githubUrl: '#',
       status: 'Live'
@@ -55,7 +90,7 @@ const WebProjects: React.FC = () => {
       description: 'Real-time cryptocurrency tracking dashboard with portfolio management.',
       tech: ['React', 'Chart.js', 'CoinGecko API'],
       features: ['Live Data', 'Portfolio Tracking', 'Price Alerts'],
-      image: '/images/crypto_tracker.png',
+      image: placeholderImages[4],
       liveUrl: '#',
       githubUrl: '#',
       status: 'Live'
@@ -65,7 +100,7 @@ const WebProjects: React.FC = () => {
       description: 'Comprehensive LMS with course creation, progress tracking, and interactive features.',
       tech: ['React', 'Django', 'PostgreSQL', 'Redis'],
       features: ['Course Creation', 'Progress Tracking', 'Interactive Quizzes'],
-      image: '/images/Learning_management_system.png',
+      image: placeholderImages[5],
       liveUrl: '#',
       githubUrl: '#',
       status: 'Development'
@@ -94,95 +129,104 @@ const WebProjects: React.FC = () => {
   };
 
   return (
-    <section id="web" className={`py-20 px-6 ${isDarkMode ? 'bg-slate-900' : 'bg-white'}`} ref={sectionRef}>
-      <div className="container mx-auto max-w-7xl">
+    <section 
+      id="web" 
+      className={`relative py-20 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-slate-900' : 'bg-white'}`}
+      ref={sectionRef}
+    >
+      <div className="absolute inset-0 overflow-hidden">
+        <div className={`absolute inset-0 ${isDarkMode ? 'bg-slate-900' : 'bg-white'}`} />
+      </div>
+      
+      <div className="relative container mx-auto max-w-7xl">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-              Web Projects
-            </span>
-          </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 mx-auto mb-8" />
-          <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} max-w-2xl mx-auto`}>
-            Modern web applications built with cutting-edge technologies and best practices
-          </p>
+          <motion.h2 
+            className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            Featured Projects
+          </motion.h2>
+          <motion.p 
+            className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            Here are some of my recent projects. Each one was built with a focus on performance, accessibility, and user experience.
+          </motion.p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8" ref={projectsRef}>
+        <div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          ref={projectsRef}
+        >
           {projects.map((project, index) => (
-            <motion.div
+            <CometCard 
               key={index}
-              className={`project-card group relative ${
+              className="h-full"
+              rotateDepth={10}
+              translateDepth={15}
+            >
+              <div className={`h-full flex flex-col ${
                 isDarkMode 
                   ? 'bg-slate-900/50 border-slate-700/50' 
                   : 'bg-white border-gray-200'
-              } backdrop-blur-sm rounded-xl border overflow-hidden transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-400/50`}
-              initial={{ opacity: 0, scale: 0.95, y: 30, rotateX: 0, rotateY: 0 }}
-              animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0, rotateY: 0 }}
-              transition={{ 
-                duration: 0.6, 
-                delay: index * 0.1, 
-                type: 'spring', 
-                stiffness: 120, 
-                damping: 18,
-                scale: { type: 'spring', stiffness: 300, damping: 15 }
-              }}
-              whileHover={{ 
-                scale: 1.03,
-                y: -4,
-                boxShadow: isDarkMode 
-                  ? "0 20px 40px -10px rgba(99, 102, 241, 0.15)" 
-                  : "0 20px 40px -10px rgba(99, 102, 241, 0.1)",
-                borderColor: isDarkMode ? '#818CF8' : '#818CF8',
-                transition: { 
-                  duration: 0.3,
-                  ease: [0.4, 0, 0.2, 1]
-                }
-              }}
-              whileTap={{ 
-                scale: 0.98,
-                transition: { 
-                  duration: 0.2,
-                  ease: [0.4, 0, 0.2, 1]
-                } 
-              }}
-              onHoverStart={e => {}}
-              onHoverEnd={e => {}}
-              style={{
-                transformStyle: 'preserve-3d',
-                transformPerspective: 1000,
-              }}
-            >
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/30 via-purple-500/20 to-pink-500/30 rounded-xl blur opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:duration-300" />
-              <div className="relative">
+              } backdrop-blur-sm rounded-xl border overflow-hidden transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-400/50`}>
                 {/* Project Image */}
-                <motion.div
-                  className={`aspect-video ${
-                    isDarkMode 
-                      ? 'bg-gradient-to-br from-indigo-900/30 via-purple-900/20 to-pink-900/20' 
-                      : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
-                  } flex items-center justify-center relative overflow-hidden group-hover:shadow-inner group-hover:shadow-indigo-500/5 transition-all duration-500`}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.7, delay: index * 0.12, type: 'spring', stiffness: 120, damping: 18 }}
-                >
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="absolute inset-0 w-full h-full object-cover object-center rounded-xl shadow-md border-2 border-indigo-200 dark:border-slate-700 transition-transform duration-700 group-hover:scale-105"
-                    style={{ objectFit: 'cover', objectPosition: 'center', imageRendering: 'auto' }}
-                    loading="lazy"
-                    onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                  />
-                  {/* Status badge */}
-                  <div className="absolute top-3 right-3 z-20">
-                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(project.status)}`}>{project.status}</span>
-                  </div>
-                </motion.div>
+                <div className={`aspect-video ${
+                  isDarkMode 
+                    ? 'bg-gradient-to-br from-indigo-900/30 via-purple-900/20 to-pink-900/20' 
+                    : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
+                } flex items-center justify-center relative overflow-hidden group-hover:shadow-inner group-hover:shadow-indigo-500/5 transition-all duration-500`}>
+                  <motion.div 
+                    className="relative w-full h-full"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.7, delay: index * 0.12, type: 'spring', stiffness: 120, damping: 18 }}
+                  >
+                    <div className="relative w-full h-64 overflow-hidden rounded-xl shadow-lg group">
+                      <div className="absolute inset-0">
+                        <img
+                          src={project.image}
+                          alt={project.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          loading="lazy"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const fallback = target.nextElementSibling as HTMLElement;
+                            if (fallback) fallback.style.display = 'flex';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="text-center p-6">
+                            <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                              <Globe className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
+                              {project.title}
+                            </h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
+                              Click to view details
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Status badge */}
+                    <div className="absolute top-3 right-3 z-20">
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(project.status)}`}>
+                        {project.status}
+                      </span>
+                    </div>
+                  </motion.div>
+                </div>
 
                 {/* Project Info */}
-                <div className="p-6 space-y-4 transform group-hover:-translate-y-1 transition-transform duration-500">
-                  <div>
+                <div className="p-6 space-y-4 flex-1 flex flex-col">
+                  <div className="flex-1">
                     <h3 className={`text-xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                       {project.title}
                     </h3>
@@ -202,7 +246,7 @@ const WebProjects: React.FC = () => {
                             : 'bg-indigo-50 text-indigo-700'
                         } text-xs rounded-md`}
                       >
-                        {techIcons[tech] || <Globe className="w-3 h-3" />}
+                        <TechIcon name={tech} />
                         <span>{tech}</span>
                       </span>
                     ))}
@@ -212,9 +256,12 @@ const WebProjects: React.FC = () => {
                   <div>
                     <ul className="space-y-1">
                       {project.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className={`flex items-center text-sm ${
-                          isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                        }`}>
+                        <li 
+                          key={featureIndex} 
+                          className={`flex items-center text-sm ${
+                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}
+                        >
                           <div className="w-1 h-1 bg-indigo-400 rounded-full mr-2" />
                           {feature}
                         </li>
@@ -226,6 +273,8 @@ const WebProjects: React.FC = () => {
                   <div className="flex space-x-3 pt-2">
                     <motion.a
                       href={project.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="flex items-center space-x-1 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-md transition-colors duration-200"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -235,6 +284,8 @@ const WebProjects: React.FC = () => {
                     </motion.a>
                     <motion.a
                       href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className={`flex items-center space-x-1 px-3 py-2 border ${
                         isDarkMode 
                           ? 'border-gray-600 hover:border-indigo-500 text-gray-300 hover:text-indigo-400' 
@@ -249,7 +300,7 @@ const WebProjects: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </CometCard>
           ))}
         </div>
       </div>

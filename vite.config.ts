@@ -23,8 +23,15 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: true,
+    chunkSizeWarningLimit: 1000, // Increase chunk size warning limit to 1000KB
     rollupOptions: {
       output: {
+        manualChunks: {
+          // Split vendor modules into separate chunks
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['framer-motion', 'lucide-react'],
+          'mdx-vendor': ['@mdx-js/rollup', '@mdx-js/react'],
+        },
         entryFileNames: 'assets/[name].min.js',
         chunkFileNames: 'assets/[name].[hash].chunk.js',
         assetFileNames: (assetInfo) => {

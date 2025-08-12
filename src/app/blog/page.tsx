@@ -166,12 +166,32 @@ const BlogSearch = ({ defaultValue }: { defaultValue?: string }) => (
 );
 
 export const metadata: Metadata = {
-  title: 'Blog - Harshal Poojari',
-  description: 'Read my thoughts on software development, design, and more.',
+  title: 'Blog | Harshal Poojari - Web & Game Development Articles',
+  description: 'Explore in-depth articles on web development, game design, AI, and programming. Learn from tutorials, insights, and technical deep dives by Harshal Poojari.',
+  keywords: [
+    'web development blog',
+    'game development tutorials',
+    'AI programming',
+    'React',
+    'Next.js',
+    'Unity',
+    'JavaScript',
+    'TypeScript',
+    'technical blog',
+    'programming tutorials'
+  ],
   openGraph: {
-    title: 'Blog - Harshal Poojari',
-    description: 'Read my thoughts on software development, design, and more.',
+    title: 'Blog | Harshal Poojari - Web & Game Development Articles',
+    description: 'Explore in-depth articles on web development, game design, AI, and programming. Learn from tutorials, insights, and technical deep dives by Harshal Poojari.',
+    url: 'https://letsmakeai.com/blog',
     type: 'website',
+    siteName: 'Harshal Poojari Portfolio',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Blog | Harshal Poojari - Web & Game Development',
+    description: 'Technical articles and tutorials on web development, game design, and AI programming.',
   },
 };
 
@@ -198,7 +218,20 @@ function FilterBadge({ label, href }: { label: string; href: string }) {
   );
 }
 
-export default function BlogPage({
+import type { Post } from '@/lib/api';
+
+// Helper type to handle the body content
+type PostWithSearchableBody = Post & {
+  // Ensure we can search through the body content
+  body: any; // We'll handle the body content dynamically
+  // Add any additional properties we need for the UI
+  excerpt?: string;
+  views?: number;
+  featured?: boolean;
+  coverImage?: string;
+};
+
+export default async function BlogPage({
   searchParams,
 }: {
   searchParams: SearchParams;
@@ -206,44 +239,63 @@ export default function BlogPage({
   const { search, tag, category, sort = 'newest' } = searchParams;
   
   // Get all posts with filters applied using the API
-  let posts = getAllPosts({ tag: tag || '', category: category || '' });
+  let posts: PostWithSearchableBody[] = await getAllPosts({ tag: tag || '', category: category || '' });
   
   // Apply search filter
   if (search) {
     const searchLower = search.toLowerCase();
-    posts = posts.filter((post) =>
-      post.title.toLowerCase().includes(searchLower) ||
-      post.description?.toLowerCase().includes(searchLower) ||
-      post.excerpt?.toLowerCase().includes(searchLower) ||
-      post.tags?.some((t: string) => t.toLowerCase().includes(searchLower)) ||
-      post.body.raw.toLowerCase().includes(searchLower)
-    );
+    posts = posts.filter((post) => {
+      // Handle different possible body formats
+      let bodyText = '';
+      if (Array.isArray(post.body)) {
+        bodyText = post.body
+          .map((block: any) => 
+            (block.children || [])
+              .map((child: any) => child.text || '')
+              .join('')
+          )
+          .join(' ');
+      } else if (typeof post.body === 'string') {
+        bodyText = post.body;
+      }
+      
+      return (
+        post.title.toLowerCase().includes(searchLower) ||
+        (post.description?.toLowerCase().includes(searchLower) ?? false) ||
+        (post.excerpt?.toLowerCase().includes(searchLower) ?? false) ||
+        (post.tags?.some((t: string) => t.toLowerCase().includes(searchLower)) ?? false) ||
+        bodyText.toLowerCase().includes(searchLower)
+      );
+    });
   }
 
   // Sort posts
+  const sortedPosts = [...posts];
   if (sort === 'oldest') {
-    posts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    sortedPosts.sort((a, b) => new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime());
   } else if (sort === 'popular') {
-    posts.sort((a, b) => {
-      const aScore = (a.views || 0) + new Date(a.date).getTime() / 10000000000;
-      const bScore = (b.views || 0) + new Date(b.date).getTime() / 10000000000;
+    sortedPosts.sort((a, b) => {
+      const aScore = (a.views || 0) + new Date(a.publishedAt).getTime() / 10000000000;
+      const bScore = (b.views || 0) + new Date(b.publishedAt).getTime() / 10000000000;
       return bScore - aScore;
     });
   } else {
     // Default: newest first
-    posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    sortedPosts.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
   }
 
   // Get featured posts (first 2 posts with featured: true)
-  const featuredPosts = posts.filter((post) => post.featured).slice(0, 2);
+  const featuredPosts = sortedPosts.filter((post) => post.featured).slice(0, 2);
   
   // Get all other posts (non-featured or beyond the first 2 featured)
-  const regularPosts = posts.filter(
+  const regularPosts = sortedPosts.filter(
     (post, _index) => !post.featured || (post.featured && !featuredPosts.includes(post))
   );
   // Get all tags and categories using the API
-  const allTags = getAllTags();
-  const allCategories = getAllCategories();
+  const [allTags, allCategories] = await Promise.all([
+    getAllTags(),
+    getAllCategories()
+  ]);
   
   // Check if filtering
   const isFiltered = Boolean(search || tag || category);
@@ -464,17 +516,19 @@ export default function BlogPage({
             <div className="rounded-lg border border-gray-200 p-6 dark:border-gray-700 bg-white dark:bg-gray-800">
               <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Recent Posts</h3>
               <div className="space-y-3">
-                {getAllPosts({ limit: 3 }).map((recentPost) => (
-                  <Link
-                    key={recentPost._id}
-                    href={`/blog/${recentPost.slug}`}
-                    className="block group"
-                  >
-                    <h4 className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 line-clamp-2">
-                      {recentPost.title}
-                    </h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {new Date(recentPost.date).toLocaleDateString('en-US', {
+                {posts
+                  .slice(0, 3)
+                  .map((recentPost) => (
+                    <Link
+                      key={recentPost._id}
+                      href={`/blog/${recentPost.slug}`}
+                      className="block group"
+                    >
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 line-clamp-2">
+                        {recentPost.title}
+                      </h4>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        {new Date(recentPost.publishedAt).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric'
                       })}

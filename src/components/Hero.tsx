@@ -3,9 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, FileDown, X, ArrowLeft, ArrowRight, ExternalLink, Github } from 'lucide-react';
 import * as THREE from 'three';
 import { portfolioItems as importedPortfolioItems } from './Portfolio';
+import { useTheme } from '../context/ThemeContext';
 
 const Hero: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
+  const { isDarkMode } = useTheme();
   const sceneRef = useRef<THREE.Scene>();
   const rendererRef = useRef<THREE.WebGLRenderer>();
   const frameRef = useRef<number>();

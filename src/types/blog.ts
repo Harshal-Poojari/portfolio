@@ -17,11 +17,14 @@ export interface BlogPost {
   tags: string[];
   category: string;
   featured: boolean;
-  author: string | Author;
+  isNew?: boolean; // Added missing property
+  author: Author | string; // Changed order for better type inference
   readingTime: number;
   url: string;
   views?: number;
   likes?: number;
+  comments?: number; // Added missing property
+  difficulty?: string; // Added missing property
   publishedAt: string;
   updatedAt?: string;
   seoTitle?: string;

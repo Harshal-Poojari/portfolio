@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-import { ThemeContext } from '@/App';
+import { useTheme } from '@/context/ThemeContext';
 import NewsletterSignup from './NewsletterSignup';
 
 interface NewsletterPopupProps {
@@ -10,7 +10,7 @@ interface NewsletterPopupProps {
 }
 
 const NewsletterPopup: React.FC<NewsletterPopupProps> = ({ isOpen, onClose }) => {
-  const { isDarkMode } = useContext(ThemeContext);
+  const { isDarkMode } = useTheme();
 
   return (
     <AnimatePresence>

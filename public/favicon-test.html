@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Favicon Test</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .favicon-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Favicon Test Page</h1>
+    <div class="favicon-container">
+        <h2>Favicon should appear in your browser tab</h2>
+        <p>If you can see the favicon in your browser tab, it means the favicon is working correctly.</p>
+        <p>If not, please check the following:</p>
+        <ol style="text-align: left; max-width: 600px; margin: 0 auto;">
+            <li>Make sure the file exists at: <code>public/favicon.ico</code></li>
+            <li>Try clearing your browser cache and hard refreshing (Ctrl+F5 or Cmd+Shift+R)</li>
+            <li>Try opening the favicon directly: <a href="/favicon.ico" target="_blank">Open favicon.ico</a></li>
+        </ol>
+    </div>
+    <div>
+        <p>If the favicon still doesn't appear, you might need to:</p>
+        <ol style="text-align: left; max-width: 600px; margin: 0 auto;">
+            <li>Convert your image to .ico format (recommended size: 32x32 or 64x64 pixels)</li>
+            <li>Place it in the <code>public</code> folder as <code>favicon.ico</code></li>
+            <li>Restart your development server</li>
+        </ol>
+    </div>
+</body>
+</html>

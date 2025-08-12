@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" 
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+  xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+  xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>Prompto Blog - LetsMakeAI</title>
+    <link>https://letsmakeai.com/blog</link>
+    <description>AI, Game Development, and Technology Insights</description>
+    <lastBuildDate>2025-08-12T11:57:18.933Z</lastBuildDate>
+    <language>en-us</language>
+    <copyright>2025 Harshal Poojari. All rights reserved.</copyright>
+    <atom:link href="https://letsmakeai.com/rss.xml" rel="self" type="application/rss+xml" />
+    <sy:updatePeriod>daily</sy:updatePeriod>
+    <sy:updateFrequency>1</sy:updateFrequency>
+    <generator>LetsMakeAI RSS Generator</generator>
+    <webMaster>harshalpoojari01@gmail.com (Harshal Poojari)</webMaster>
+    <managingEditor>harshalpoojari01@gmail.com (Harshal Poojari)</managingEditor>
+    
+    
+  </channel>
+</rss>

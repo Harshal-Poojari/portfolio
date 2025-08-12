@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, ExternalLink, Github, Star, Calendar, Search, X, Tag } from 'lucide-react';
-import { ThemeContext } from '../App';
+import { useTheme } from '../context/ThemeContext';
 
 export const portfolioItems = [
     {
@@ -97,7 +97,7 @@ export const portfolioItems = [
   ];
 
 const Portfolio: React.FC = () => {
-  const { isDarkMode } = useContext(ThemeContext);
+  const { isDarkMode } = useTheme();
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);

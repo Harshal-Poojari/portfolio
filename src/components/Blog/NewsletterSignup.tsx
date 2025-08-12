@@ -2,7 +2,7 @@ import React, { useState, useCallback, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Send, CheckCircle, XCircle } from 'lucide-react';
 import emailjs from '@emailjs/browser';
-import { ThemeContext } from '@/App';
+import { useTheme } from '@/context/ThemeContext';
 import { cn } from '@/lib/utils';
 
 interface NewsletterSignupProps {
@@ -10,7 +10,7 @@ interface NewsletterSignupProps {
 }
 
 const NewsletterSignup: React.FC<NewsletterSignupProps> = ({ className }) => {
-  const { isDarkMode } = useContext(ThemeContext);
+  const { isDarkMode } = useTheme();
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');

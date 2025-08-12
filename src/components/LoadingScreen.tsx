@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ThemeContext } from '../App';
+import { useTheme } from '../context/ThemeContext';
 
 interface LoadingScreenProps {
   onComplete: () => void;
@@ -8,7 +8,7 @@ interface LoadingScreenProps {
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
   const [progress, setProgress] = useState(0);
-  const { isDarkMode } = React.useContext(ThemeContext);
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     const timer = setInterval(() => {

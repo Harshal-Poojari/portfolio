@@ -2,10 +2,10 @@ import React, { useContext } from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, Download, Star, Users, Trophy } from 'lucide-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
-import { ThemeContext } from '../App';
+import { useTheme } from '../context/ThemeContext';
 
 const GameProjects: React.FC = () => {
-  const { isDarkMode } = useContext(ThemeContext);
+  const { isDarkMode } = useTheme();
   const sectionRef = useScrollAnimation();
 
   const featuredGame = {

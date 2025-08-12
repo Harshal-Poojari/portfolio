@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import DOMPurify from 'dompurify';
 
-import { ThemeContext } from '@/App';
+import { ThemeContext } from '@/context/ThemeContext';
 import { getPostBySlug, blogCategories } from '@/data/sanityPosts';
 import { useRouter } from '@/context/RouterContext';
 import type { BlogPost } from '@/types/blog';
@@ -32,6 +32,8 @@ import StructuredData from '@/components/StructuredData';
 
 interface BlogPostPageProps {
   slug: string;
+  post?: BlogPost | null;
+  relatedPosts?: BlogPost[];
 }
 
 // Utility functions
@@ -53,7 +55,9 @@ function getAuthorName(author: any) {
   return typeof author === 'string' ? author : author.name || 'Unknown Author';
 }
 
-// Content renderer with enhanced safety
+import ReactMarkdown from 'react-markdown';
+
+// Content renderer with markdown support
 function RenderContent({ content, isDarkMode }: { content: string; isDarkMode: boolean }) {
   if (!content) {
     return (
@@ -64,27 +68,82 @@ function RenderContent({ content, isDarkMode }: { content: string; isDarkMode: b
   }
 
   return (
-    <div
-      className={`prose prose-lg max-w-none ${isDarkMode ? 'prose-invert' : ''}`}
-      dangerouslySetInnerHTML={{ 
-        __html: DOMPurify.sanitize(content, {
-          ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'img', 'blockquote', 'code', 'pre'],
-          ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'target', 'rel']
-        })
-      }}
-    />
+    <div className={`prose prose-lg max-w-none ${isDarkMode ? 'prose-invert' : ''} prose-headings:font-heading`}>
+      <ReactMarkdown
+        components={{
+          a: ({node, ...props}) => (
+            <a 
+              {...props} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline"
+            />
+          ),
+          img: ({node, ...props}) => (
+            <img 
+              {...props} 
+              className="rounded-lg my-4 mx-auto"
+              alt={props.alt || 'Blog post image'}
+            />
+          ),
+          ul: ({node, ...props}) => (
+            <ul className="list-disc pl-6 space-y-2" {...props} />
+          ),
+          ol: ({node, ...props}) => (
+            <ol className="list-decimal pl-6 space-y-2" {...props} />
+          ),
+          blockquote: ({node, ...props}) => (
+            <blockquote 
+              className={`border-l-4 ${isDarkMode ? 'border-gray-600' : 'border-gray-300'} pl-4 italic`} 
+              {...props} 
+            />
+          ),
+          code({node, inline, className, children, ...props}) {
+            return (
+              <code className={`${className} ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} px-2 py-1 rounded`} {...props}>
+                {children}
+              </code>
+            );
+          },
+          pre({node, ...props}) {
+            return (
+              <pre className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} p-4 rounded-lg overflow-x-auto my-4`} {...props} />
+            );
+          },
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    </div>
   );
 }
 
 const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
-  const { isDarkMode } = useContext(ThemeContext);
+  // Get theme context
+  const theme = useContext(ThemeContext);
   const { goBack, navigateTo } = useRouter();
+  
+  // Handle navigation to home
+  const handleHomeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigateTo('home');
+  };
+  
+  // Handle navigation to blog section
+  const handleBlogClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigateTo('blog-list');
+  };
 
+  // State hooks
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [likeCount, setLikeCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
+  
+  // Get theme values with fallbacks
+  const isDarkMode = theme?.isDarkMode || false;
 
   // Fetch blog post data
   useEffect(() => {
@@ -252,15 +311,28 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
           <p className={`mb-6 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             The blog post you're looking for doesn't exist or has been moved.
           </p>
-          <motion.button
-            onClick={goBack}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Blog
-          </motion.button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <motion.a
+              href="/"
+              onClick={handleHomeClick}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Home className="w-4 h-4" />
+              Back to Home
+            </motion.a>
+            <motion.a
+              href="#blog"
+              onClick={handleBlogClick}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-200 text-gray-800 dark:bg-slate-700 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors duration-200"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <BookOpen className="w-4 h-4" />
+              View All Posts
+            </motion.a>
+          </div>
         </motion.div>
       </div>
     );
@@ -288,14 +360,16 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
           <meta name="author" content={getAuthorName(post.author)} />
           {post.publishedAt && <meta property="article:published_time" content={post.publishedAt} />}
           {post.updatedAt && <meta property="article:modified_time" content={post.updatedAt} />}
-          <StructuredData post={post} />
+          <StructuredData post={post as any} />
         </Head>
 
         <main className="max-w-4xl mx-auto px-4 py-8">
           {/* Navigation & Action Bar */}
           <div className="flex items-center justify-between mb-8 gap-4 flex-wrap">
-            <motion.button
-              onClick={goBack}
+            <div className="flex items-center gap-2">
+            <motion.a
+              href="/"
+              onClick={handleHomeClick}
               className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                 isDarkMode 
                   ? 'text-indigo-400 hover:bg-slate-800/50 hover:text-indigo-300'
@@ -303,11 +377,27 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug }) => {
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              aria-label="Go back to previous page"
+              aria-label="Go to home page"
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back</span>
-            </motion.button>
+              <Home className="w-4 h-4" />
+              <span>Home</span>
+            </motion.a>
+            <motion.a
+              href="#blog"
+              onClick={handleBlogClick}
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                isDarkMode 
+                  ? 'text-gray-300 hover:bg-slate-800/50 hover:text-white'
+                  : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="View all blog posts"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>All Posts</span>
+            </motion.a>
+          </div>
 
             <div className="flex items-center gap-2">
               <motion.button

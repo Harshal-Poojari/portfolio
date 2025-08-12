@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { format, parseISO } from 'date-fns';
 import { Calendar, Clock, ArrowRight, Twitter, Facebook, Linkedin, Link as LinkIcon, Share2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import LazyLoad from 'react-lazyload';
 import ReactMarkdown from 'react-markdown';
+import { useRouter } from '@/context/RouterContext';
 
 // Utility classNames combiner
 const cn = (...classes: (string | undefined | false | null)[]) => (
@@ -157,7 +157,14 @@ export function BlogCard({ post, featured = false, className }: BlogCardProps) {
     readTime = 5,
   } = post;
 
-  const postUrl = `/blog/${slug}`;
+  const { navigateTo } = useRouter();
+  
+  // Handle card click
+  const handleCardClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigateTo('blog-post', slug);
+  };
 
   return (
     <article
@@ -165,18 +172,13 @@ export function BlogCard({ post, featured = false, className }: BlogCardProps) {
       role="article"
       aria-labelledby={`post-title-${slug}`}
       aria-describedby={`post-excerpt-${slug}`}
+      onClick={handleCardClick}
       className={cn(
-        'relative group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900',
+        'relative group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900 cursor-pointer',
         featured ? 'md:flex-row' : 'h-full',
         className
       )}
     >
-      {/* Full clickable link overlay */}
-      <Link
-        to={postUrl}
-        aria-label={`Read more about ${title}`}
-        className="absolute inset-0 z-10"
-      />
 
       {/* Cover Image with LazyLoad and blurred placeholder */}
       {coverImage && (
@@ -243,16 +245,23 @@ export function BlogCard({ post, featured = false, className }: BlogCardProps) {
         {/* Meta info and Read more */}
         <div className="mt-auto flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
           <PostMeta date={date} readTime={readTime} />
-          <Link
-            to={postUrl}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              navigateTo('blog-post', slug);
+            }}
             className="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
           >
             Read more <ArrowRight className="ml-1 w-4 h-4" />
-          </Link>
+          </button>
         </div>
 
         {/* Social Share Buttons */}
-        <SocialShareButtons url={window.location.origin + postUrl} title={title} className="mt-4" />
+        <SocialShareButtons 
+          url={`${window.location.origin}/blog/${slug}`} 
+          title={title} 
+          className="mt-4" 
+        />
       </div>
     </article>
   );

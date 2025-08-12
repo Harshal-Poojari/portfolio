@@ -1,0 +1,98 @@
+/* Dark Mode CSS Fixes for Portfolio Navigation */
+
+/* Root level dark mode setup */
+:root {
+  color-scheme: dark;
+}
+
+html.dark,
+html {
+  background-color: #0f172a; /* slate-900 */
+  color: #d1d5db; /* gray-300 */
+}
+
+/* Floating Dock Desktop Specific Fixes */
+.floating-dock-desktop {
+  background-color: rgba(15, 23, 42, 0.9) !important; /* slate-900/90 */
+  border-color: rgba(71, 85, 105, 0.5) !important; /* slate-600/50 */
+}
+
+.floating-dock-desktop .dock-item {
+  background-color: rgba(30, 41, 59, 0.8) !important; /* slate-800/80 */
+  border-color: rgba(71, 85, 105, 0.5) !important; /* slate-600/50 */
+  color: #d1d5db !important; /* gray-300 */
+}
+
+.floating-dock-desktop .dock-item:hover {
+  background-color: rgba(51, 65, 85, 1) !important; /* slate-700 */
+  color: #ffffff !important; /* white */
+}
+
+.floating-dock-desktop .dock-item.active {
+  background: linear-gradient(to right, #4f46e5, #7c3aed) !important; /* indigo-600 to purple-600 */
+  color: #ffffff !important; /* white */
+}
+
+/* Navigation Header Fixes */
+.nav-header {
+  background-color: rgba(15, 23, 42, 0.9) !important; /* slate-900/90 */
+  border-color: rgba(71, 85, 105, 0.5) !important; /* slate-600/50 */
+}
+
+/* Mobile Menu Button */
+.mobile-menu-btn {
+  background-color: rgba(30, 41, 59, 0.9) !important; /* slate-800/90 */
+  color: #d1d5db !important; /* gray-300 */
+}
+
+.mobile-menu-btn:hover {
+  background-color: rgba(51, 65, 85, 0.9) !important; /* slate-700/90 */
+  color: #ffffff !important; /* white */
+}
+
+/* Mobile Menu Panel */
+.mobile-menu-panel {
+  background-color: rgba(15, 23, 42, 0.95) !important; /* slate-900/95 */
+}
+
+.mobile-menu-item {
+  color: #d1d5db !important; /* gray-300 */
+}
+
+.mobile-menu-item:hover {
+  background-color: rgba(30, 41, 59, 0.5) !important; /* slate-800/50 */
+  color: #ffffff !important; /* white */
+}
+
+.mobile-menu-item.active {
+  background: linear-gradient(to right, #4f46e5, #7c3aed) !important; /* indigo-600 to purple-600 */
+  color: #ffffff !important; /* white */
+}
+
+/* Tooltip Fixes */
+.dock-tooltip {
+  background-color: rgba(30, 41, 59, 0.95) !important; /* slate-800/95 */
+  border-color: rgba(71, 85, 105, 0.5) !important; /* slate-700/50 */
+  color: #e5e7eb !important; /* gray-200 */
+}
+
+/* Force dark mode for text elements */
+.nav-text,
+.nav-title,
+.nav-subtitle {
+  color: #d1d5db !important; /* gray-300 */
+}
+
+.nav-title {
+  color: #ffffff !important; /* white for titles */
+}
+
+/* Active indicator dot */
+.active-indicator {
+  background-color: #ffffff !important; /* white */
+}
+
+/* Ensure all icons inherit proper colors */
+.nav-icon {
+  color: inherit !important;
+}

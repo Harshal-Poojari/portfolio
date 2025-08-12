@@ -3,8 +3,8 @@ import { createClient } from '@sanity/client';
 import imageUrlBuilder from '@sanity/image-url';
 
 // Configuration from environment variables
-const projectId = import.meta.env.VITE_SANITY_PROJECT_ID || 'zcpo32br';
-const dataset = import.meta.env.VITE_SANITY_DATASET || 'production';
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'zcpo32br';
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
 const apiVersion = '2024-01-01';
 
 // Validate configuration - only check if projectId exists, not against specific values
@@ -15,7 +15,7 @@ console.log('Sanity Configuration:', {
   projectId: projectId ? '***' + projectId.slice(-4) : 'Not set',
   dataset,
   isConfigured,
-  env: import.meta.env.MODE,
+  env: process.env.NODE_ENV || 'development',
 });
 
 // Create client with better error handling
